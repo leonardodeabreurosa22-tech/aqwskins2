@@ -30,25 +30,25 @@ api.interceptors.request.use(
     if (authStore) {
       try {
         const parsed = JSON.parse(authStore);
-        // Zustand persist wraps state in { state: {...} } or stores directly
+        // Zustand persist wraps state in { state: {...} }
         const token = parsed.state?.token || parsed.token;
         if (token) {
           config.headers["Authorization"] = `Bearer ${token}`;
           console.log(
-            "Token added to request:",
+            "✅ Token added to request:",
             token.substring(0, 20) + "..."
           );
         } else {
           console.warn(
-            "No token found in auth storage. Storage content:",
+            "⚠️ No token found in auth storage. Storage content:",
             parsed
           );
         }
       } catch (e) {
-        console.error("Error parsing auth storage:", e);
+        console.error("❌ Error parsing auth storage:", e);
       }
     } else {
-      console.warn("No auth-storage found in localStorage");
+      console.warn("⚠️ No auth-storage found in localStorage");
     }
 
     // Add CSRF token if available
@@ -63,7 +63,11 @@ api.interceptors.request.use(
     const language = localStorage.getItem("i18nextLng") || "en";
     config.headers["Accept-Language"] = language;
 
-    console.log("Request headers:", config.headers);
+    console.log("📤 Request:", config.method?.toUpperCase(), config.url);
+    console.log("📋 Request headers:", {
+      Authorization: config.headers.Authorization ? '✅ Present' : '❌ Missing',
+      'Content-Type': config.headers['Content-Type']
+    });
 
     return config;
   },

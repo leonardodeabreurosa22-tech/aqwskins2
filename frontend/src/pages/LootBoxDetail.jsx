@@ -14,7 +14,7 @@ const LootBoxDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, updateUser, logout } = useAuthStore();
   const [lootbox, setLootbox] = useState(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +54,13 @@ const LootBoxDetail = () => {
     const userBalance = parseFloat(user?.balance || 0);
     const boxPrice = parseFloat(lootbox?.price || 0);
     
-    console.log('Balance check:', { userBalance, boxPrice, hasEnough: userBalance >= boxPrice });
+    console.log('Balance check:', { 
+      userBalance, 
+      boxPrice, 
+      hasEnough: userBalance >= boxPrice,
+      user: user,
+      isAuthenticated 
+    });
 
     if (!user || userBalance < boxPrice) {
       toast.error(`Insufficient balance. You have $${userBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} but need $${boxPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
@@ -66,11 +72,26 @@ const LootBoxDetail = () => {
     
     try {
       const result = await lootboxService.open(id);
-      const item = result?.data?.item || result?.item;
+      const item = result?.data?.opening?.item || result?.data?.item || result?.item;
       setWonItem(item);
+      
+      // Update user balance
+      if (result?.data?.opening?.newBalance !== undefined) {
+        updateUser({ balance: result.data.opening.newBalance });
+      }
+      
       await startAnimation(item);
     } catch (error) {
-      toast.error(error.response?.data?.error?.message || 'Failed to open case');
+      console.error('Error opening lootbox:', error);
+      
+      if (error.response?.status === 401) {
+        toast.error('Session expired. Please login again.');
+        logout();
+        navigate('/login');
+      } else {
+        toast.error(error.response?.data?.error || error.response?.data?.message || 'Failed to open case');
+      }
+      
       setIsSpinning(false);
     }
   };
