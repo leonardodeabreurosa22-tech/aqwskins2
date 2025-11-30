@@ -46,7 +46,7 @@ const LootBoxDetail = () => {
       return;
     }
 
-    if (user.balance < lootbox.price) {
+    if (!user || user.balance < lootbox.price) {
       toast.error(t('lootbox.insufficientBalance'));
       return;
     }
