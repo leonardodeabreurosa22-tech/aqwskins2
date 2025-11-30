@@ -4,8 +4,9 @@ services:
     name: aqw-skins-backend
     runtime: node
     plan: free
-    buildCommand: cd backend && npm install
-    startCommand: cd backend && npm start
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -13,3 +14,6 @@ services:
         value: 10000
     autoDeploy: true
     branch: main
+    buildFilter:
+      paths:
+        - backend/**
