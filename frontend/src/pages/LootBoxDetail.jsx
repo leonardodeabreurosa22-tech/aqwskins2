@@ -242,38 +242,3 @@ const LootBoxDetail = () => {
 };
 
 export default LootBoxDetail;
-
-                {isAuthenticated && user && (user?.balance || 0) < (lootbox?.price || 0) && (
-                  <p className="text-red-400 text-sm mt-2 text-center">
-                    {t('lootbox.insufficientBalance')}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Items */}
-          <div className="lg:col-span-2">
-            <h2 className="text-2xl font-bold mb-6">{t('lootbox.contains')}</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {items.map((item) => (
-                <ItemCard key={item.id} item={item} showPrice showRarity />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Opening Modal */}
-        <LootBoxOpeningModal
-          isOpen={showOpeningModal}
-          onClose={() => setShowOpeningModal(false)}
-          lootbox={lootbox}
-          onOpen={handleOpen}
-          opening={opening}
-        />
-      </div>
-    </div>
-  );
-};
-
-export default LootBoxDetail;
