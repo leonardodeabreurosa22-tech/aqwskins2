@@ -29,6 +29,7 @@ import ticketRoutes from "./routes/ticket.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import fairnessRoutes from "./routes/fairness.routes.js";
 import currencyRoutes from "./routes/currency.routes.js";
+import healthRoutes from "./routes/health.routes.js";
 
 // Import utilities
 import { logger } from "./utils/logger.js";
@@ -139,6 +140,7 @@ app.get("/health", (req, res) => {
 // API Routes (v1)
 const API_PREFIX = "/api/v1";
 
+app.use(`${API_PREFIX}/health`, healthRoutes);
 app.use(`${API_PREFIX}/auth`, authRoutes);
 app.use(`${API_PREFIX}/users`, userRoutes);
 app.use(`${API_PREFIX}/lootboxes`, lootboxRoutes);
