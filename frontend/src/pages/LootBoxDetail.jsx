@@ -136,8 +136,8 @@ const LootBoxDetail = () => {
           className="mb-12 bg-gradient-to-r from-blue-900/30 via-purple-900/30 to-blue-900/30 rounded-2xl p-6 border border-blue-500/30"
         >
           <div className="overflow-hidden">
-            <div className="flex gap-4 animate-scroll-slow">
-              {[...items, ...items].slice(0, 8).map((item, idx) => (
+            <div className="flex gap-4 justify-center">
+              {items.slice(0, 7).map((item, idx) => (
                 <div
                   key={idx}
                   className="flex-shrink-0 w-40 h-40 bg-gray-800/50 rounded-xl p-3 border-2 transition-all hover:scale-105"
@@ -224,19 +224,6 @@ const LootBoxDetail = () => {
           opening={opening}
         />
       )}
-
-      <style jsx>{`
-        @keyframes scroll-slow {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .animate-scroll-slow {
-          animation: scroll-slow 20s linear infinite;
-        }
-        .animate-scroll-slow:hover {
-          animation-play-state: paused;
-        }
-      `}</style>
     </div>
   );
 };
