@@ -82,34 +82,45 @@ class LootBoxController {
   async getLiveDrops(req, res) {
     const { limit = 50 } = req.query;
 
-    const query = `
-      SELECT 
-        lo.id,
-        lo.created_at,
-        u.username,
-        u.avatar_url,
-        lb.name as lootbox_name,
-        lb.image_url as lootbox_image,
-        i.name as item_name,
-        i.image_url as item_image,
-        i.rarity,
-        i.value
-      FROM lootbox_openings lo
-      JOIN users u ON lo.user_id = u.id
-      JOIN lootboxes lb ON lo.lootbox_id = lb.id
-      JOIN items i ON lo.item_id = i.id
-      ORDER BY lo.created_at DESC
-      LIMIT $1
-    `;
+    try {
+      const query = `
+        SELECT 
+          lo.id,
+          lo.created_at,
+          u.username,
+          u.avatar_url,
+          lb.name as lootbox_name,
+          lb.image_url as lootbox_image,
+          i.name as item_name,
+          i.image_url as item_image,
+          i.rarity,
+          i.value
+        FROM lootbox_openings lo
+        JOIN users u ON lo.user_id = u.id
+        JOIN lootboxes lb ON lo.lootbox_id = lb.id
+        JOIN items i ON lo.item_id = i.id
+        ORDER BY lo.created_at DESC
+        LIMIT $1
+      `;
 
-    const result = await pool.query(query, [limit]);
+      const result = await pool.query(query, [limit]);
 
-    res.json({
-      success: true,
-      data: {
-        drops: result.rows
-      }
-    });
+      res.json({
+        success: true,
+        data: {
+          drops: result.rows
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching live drops:', error);
+      // Return empty array if table doesn't exist or query fails
+      res.json({
+        success: true,
+        data: {
+          drops: []
+        }
+      });
+    }
   }
 }
 
