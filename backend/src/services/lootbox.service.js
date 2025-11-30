@@ -48,10 +48,27 @@ class LootBoxService {
         }
 
         const user = userResult.rows[0];
-        logger.info('User found', { id: user.id, username: user.username, balance: user.balance, required: lootbox.price });
+        
+        // Convert to numbers for accurate comparison
+        const userBalance = parseFloat(user.balance) || 0;
+        const boxPrice = parseFloat(lootbox.price) || 0;
+        
+        logger.info('User found', { 
+          id: user.id, 
+          username: user.username, 
+          balance: userBalance, 
+          balanceType: typeof user.balance,
+          required: boxPrice,
+          priceType: typeof lootbox.price,
+          hasEnough: userBalance >= boxPrice
+        });
 
-        if (user.balance < lootbox.price) {
-          throw new AppError('Insufficient balance', 400, 'INSUFFICIENT_BALANCE');
+        if (userBalance < boxPrice) {
+          throw new AppError(
+            `Insufficient balance. You have $${userBalance.toFixed(2)} but need $${boxPrice.toFixed(2)}`,
+            400, 
+            'INSUFFICIENT_BALANCE'
+          );
         }
 
         // Check level requirement
@@ -66,7 +83,7 @@ class LootBoxService {
         // 3. Deduct credits
         await client.query(
           `UPDATE users SET balance = balance - $1 WHERE id = $2`,
-          [lootbox.price, userId]
+          [boxPrice, userId]
         );
 
         // 4. Execute provably fair draw
@@ -89,7 +106,7 @@ class LootBoxService {
             userId,
             boxId,
             drawResult.item.id,
-            lootbox.price,
+            boxPrice,
             drawResult.fairnessHash,
             JSON.stringify(drawResult.fairnessData),
             fingerprint
@@ -121,7 +138,7 @@ class LootBoxService {
           itemId: drawResult.item.id,
           itemName: drawResult.item.name,
           itemRarity: drawResult.item.rarity,
-          pricePaid: lootbox.price,
+          pricePaid: boxPrice,
           fairnessHash: drawResult.fairnessHash,
           timestamp: new Date().toISOString()
         });
@@ -137,8 +154,8 @@ class LootBoxService {
                 name: lootbox.name
               },
               item: drawResult.item,
-              pricePaid: lootbox.price,
-              newBalance: user.balance - lootbox.price
+              pricePaid: boxPrice,
+              newBalance: userBalance - boxPrice
             },
             fairness: {
               hash: drawResult.fairnessHash,
