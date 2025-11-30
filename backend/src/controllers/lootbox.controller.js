@@ -162,12 +162,29 @@ class LootBoxController {
    * Open lootbox
    */
   async openLootbox(req, res) {
-    const { id } = req.params;
-    const userId = req.user.id;
-    const fingerprint = req.body.fingerprint || req.ip;
+    try {
+      const { id } = req.params;
+      const userId = req.user.id;
+      const fingerprint = req.body.fingerprint || req.ip;
 
-    const result = await lootboxService.openLootBox(userId, id, fingerprint);
-    res.json(result);
+      console.log("Opening lootbox:", { userId, lootboxId: id, fingerprint });
+
+      const result = await lootboxService.openLootBox(userId, id, fingerprint);
+      res.json(result);
+    } catch (error) {
+      console.error("Error opening lootbox:", {
+        message: error.message,
+        code: error.code,
+        statusCode: error.statusCode,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
+      
+      res.status(error.statusCode || 500).json({
+        success: false,
+        error: error.message || "Failed to open lootbox",
+        code: error.code,
+      });
+    }
   }
 
   /**

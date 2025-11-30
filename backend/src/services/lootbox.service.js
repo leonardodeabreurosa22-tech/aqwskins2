@@ -17,6 +17,8 @@ class LootBoxService {
    */
   async openLootBox(userId, boxId, fingerprint = null) {
     try {
+      logger.info('Starting lootbox opening', { userId, boxId, fingerprint });
+      
       return await transaction(async (client) => {
         // 1. Get lootbox configuration
         const boxResult = await client.query(
@@ -26,11 +28,14 @@ class LootBoxService {
           [boxId]
         );
 
+        logger.info('Lootbox query result', { found: boxResult.rows.length });
+
         if (boxResult.rows.length === 0) {
           throw new AppError('Lootbox not found or inactive', 404, 'LOOTBOX_NOT_FOUND');
         }
 
         const lootbox = boxResult.rows[0];
+        logger.info('Lootbox found', { id: lootbox.id, name: lootbox.name, price: lootbox.price });
 
         // 2. Verify user has enough credits
         const userResult = await client.query(
@@ -38,7 +43,12 @@ class LootBoxService {
           [userId]
         );
 
+        if (userResult.rows.length === 0) {
+          throw new AppError('User not found', 404, 'USER_NOT_FOUND');
+        }
+
         const user = userResult.rows[0];
+        logger.info('User found', { id: user.id, username: user.username, balance: user.balance, required: lootbox.price });
 
         if (user.balance < lootbox.price) {
           throw new AppError('Insufficient balance', 400, 'INSUFFICIENT_BALANCE');
