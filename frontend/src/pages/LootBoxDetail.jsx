@@ -95,12 +95,12 @@ const LootBoxDetail = () => {
                   fullWidth
                   size="lg"
                   onClick={handleOpenClick}
-                  disabled={!isAuthenticated || user?.balance < lootbox.price}
+                  disabled={!isAuthenticated || !user || (user?.balance || 0) < (lootbox?.price || 0)}
                 >
                   {t('lootbox.open')}
                 </Button>
 
-                {isAuthenticated && user?.balance < lootbox.price && (
+                {isAuthenticated && user && (user?.balance || 0) < (lootbox?.price || 0) && (
                   <p className="text-red-400 text-sm mt-2 text-center">
                     {t('lootbox.insufficientBalance')}
                   </p>

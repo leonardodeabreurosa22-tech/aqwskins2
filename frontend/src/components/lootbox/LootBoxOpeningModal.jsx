@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiX, FiPackage } from 'react-icons/fi';
+import { FiX } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
 import Modal from '@components/common/Modal';
 import Button from '@components/common/Button';
+import CaseOpeningAnimation from './CaseOpeningAnimation';
 
 const LootBoxOpeningModal = ({ isOpen, onClose, lootbox, onOpen, opening }) => {
   const { t } = useTranslation();
-  const [stage, setStage] = useState('ready'); // ready, spinning, revealing, result
+  const [stage, setStage] = useState('ready'); // ready, spinning, result
   const [wonItem, setWonItem] = useState(null);
+  const [allItems, setAllItems] = useState([]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -18,66 +20,43 @@ const LootBoxOpeningModal = ({ isOpen, onClose, lootbox, onOpen, opening }) => {
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    // Generate items for animation from lootbox items
+    if (lootbox?.items) {
+      const items = lootbox.items.map(item => ({
+        ...item,
+        id: item.id || Math.random(),
+      }));
+      setAllItems(items);
+    }
+  }, [lootbox]);
+
   const handleOpen = async () => {
     setStage('spinning');
     
     try {
       const result = await onOpen();
-      
-      // Simulate spinning duration
-      setTimeout(() => {
-        setWonItem(result.item);
-        setStage('revealing');
-        
-        // Trigger confetti for rare items
-        if (['epic', 'legendary', 'mythic'].includes(result.item.rarity?.toLowerCase())) {
-          triggerConfetti(result.item.rarity);
-        }
-        
-        setTimeout(() => {
-          setStage('result');
-        }, 1000);
-      }, 3000);
+      setWonItem(result?.data?.item || result?.item);
     } catch (error) {
       setStage('ready');
-      onClose();
+      console.error('Error opening lootbox:', error);
     }
   };
 
-  const triggerConfetti = (rarity) => {
-    const colors = {
-      epic: ['#a855f7', '#9333ea', '#7e22ce'],
-      legendary: ['#f59e0b', '#d97706', '#b45309'],
-      mythic: ['#ef4444', '#dc2626', '#b91c1c'],
-    };
-
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: colors[rarity.toLowerCase()] || ['#3b82f6'],
-    });
-
-    // Second burst
-    setTimeout(() => {
+  const handleAnimationComplete = () => {
+    setStage('result');
+    
+    // Trigger confetti for rare items
+    if (['epic', 'legendary', 'mythic'].includes(wonItem?.rarity?.toLowerCase())) {
       confetti({
-        particleCount: 50,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0 },
-        colors: colors[rarity.toLowerCase()] || ['#3b82f6'],
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: wonItem.rarity === 'mythic' ? ['#ef4444', '#dc2626'] : 
+                wonItem.rarity === 'legendary' ? ['#f59e0b', '#d97706'] : 
+                ['#a855f7', '#9333ea'],
       });
-    }, 250);
-
-    setTimeout(() => {
-      confetti({
-        particleCount: 50,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1 },
-        colors: colors[rarity.toLowerCase()] || ['#3b82f6'],
-      });
-    }, 400);
+    }
   };
 
   const getRarityGradient = (rarity) => {
@@ -86,127 +65,89 @@ const LootBoxOpeningModal = ({ isOpen, onClose, lootbox, onOpen, opening }) => {
       uncommon: 'from-green-600 to-green-700',
       rare: 'from-blue-600 to-blue-700',
       epic: 'from-purple-600 to-purple-700',
-      legendary: 'from-yellow-600 to-yellow-700',
-      mythic: 'from-red-600 to-red-700',
+      legendary: 'from-yellow-600 to-orange-700',
+      mythic: 'from-red-600 to-pink-700',
     };
     return gradients[rarity?.toLowerCase()] || gradients.common;
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="lg" showClose={stage === 'ready' || stage === 'result'}>
-      <div className="text-center py-8">
+    <Modal isOpen={isOpen} onClose={stage === 'result' ? onClose : null} size="full" showClose={false}>
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black">
+        {/* Close button - only show when not spinning */}
+        {stage !== 'spinning' && (
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 z-50 p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
+          >
+            <FiX className="w-6 h-6" />
+          </button>
+        )}
+
         <AnimatePresence mode="wait">
           {/* Ready Stage */}
           {stage === 'ready' && (
             <motion.div
               key="ready"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="space-y-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex items-center justify-center min-h-screen p-8"
             >
-              <motion.div
-                animate={{ 
-                  rotateY: [0, 360],
-                  scale: [1, 1.1, 1]
-                }}
-                transition={{ 
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                className="w-48 h-48 mx-auto bg-gradient-to-br from-primary-600 to-secondary-600 rounded-2xl flex items-center justify-center shadow-glow-lg"
-              >
-                <FiPackage className="w-24 h-24 text-white" />
-              </motion.div>
+              <div className="text-center space-y-8 max-w-md">
+                <motion.div
+                  animate={{ 
+                    scale: [1, 1.05, 1],
+                    rotate: [0, 5, -5, 0]
+                  }}
+                  transition={{ 
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="w-64 h-64 mx-auto bg-gradient-to-br from-primary-600 to-secondary-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-primary-600/50"
+                >
+                  <div className="text-8xl">📦</div>
+                </motion.div>
 
-              <div>
-                <h2 className="text-3xl font-bold mb-2">{lootbox?.name}</h2>
-                <p className="text-gray-400 mb-6">{lootbox?.description}</p>
-                <div className="text-2xl font-bold text-primary-400 mb-8">
-                  ${parseFloat(lootbox?.price || 0).toFixed(2)}
+                <div>
+                  <h2 className="text-4xl font-bold mb-3 bg-gradient-to-r from-primary-400 to-secondary-400 bg-clip-text text-transparent">
+                    {lootbox?.name}
+                  </h2>
+                  <p className="text-gray-400 text-lg mb-6">{lootbox?.description}</p>
+                  <div className="text-3xl font-bold text-yellow-500 mb-8">
+                    ${parseFloat(lootbox?.price || 0).toFixed(2)}
+                  </div>
                 </div>
-              </div>
 
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={handleOpen}
-                loading={opening}
-                className="min-w-[200px]"
-              >
-                {t('lootbox.open')}
-              </Button>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={handleOpen}
+                  loading={opening}
+                  className="min-w-[250px] text-xl py-4"
+                >
+                  {t('lootbox.open') || 'OPEN CASE'}
+                </Button>
+              </div>
             </motion.div>
           )}
 
           {/* Spinning Stage */}
-          {stage === 'spinning' && (
+          {stage === 'spinning' && wonItem && (
             <motion.div
               key="spinning"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="space-y-8"
+              className="min-h-screen flex flex-col items-center justify-center"
             >
-              <motion.div
-                animate={{ 
-                  rotateY: [0, 1800],
-                  scale: [1, 1.2, 1, 1.2, 1]
-                }}
-                transition={{ 
-                  duration: 3,
-                  ease: "easeInOut"
-                }}
-                className="w-64 h-64 mx-auto bg-gradient-to-br from-primary-600 to-secondary-600 rounded-2xl flex items-center justify-center shadow-glow-xl"
-              >
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                >
-                  <FiPackage className="w-32 h-32 text-white" />
-                </motion.div>
-              </motion.div>
-
-              <div className="text-2xl font-semibold animate-pulse">
-                {t('lootbox.opening')}
-              </div>
-            </motion.div>
-          )}
-
-          {/* Revealing Stage */}
-          {stage === 'revealing' && wonItem && (
-            <motion.div
-              key="revealing"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              className="space-y-6"
-            >
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: [0, 1.2, 1] }}
-                transition={{ duration: 0.6, ease: "backOut" }}
-                className={`w-64 h-64 mx-auto bg-gradient-to-br ${getRarityGradient(wonItem.rarity)} rounded-2xl p-4 shadow-glow-xl border-4 border-white/20`}
-              >
-                <div className="w-full h-full bg-gray-900 rounded-xl overflow-hidden">
-                  <img
-                    src={wonItem.imageUrl || '/placeholder-item.png'}
-                    alt={wonItem.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                <span className={`badge badge-${wonItem.rarity?.toLowerCase()} text-lg px-4 py-2`}>
-                  {wonItem.rarity}
-                </span>
-              </motion.div>
+              <h2 className="text-3xl font-bold mb-8">Opening {lootbox?.name}...</h2>
+              <CaseOpeningAnimation
+                items={allItems}
+                wonItem={wonItem}
+                onComplete={handleAnimationComplete}
+              />
             </motion.div>
           )}
 
@@ -264,3 +205,83 @@ const LootBoxOpeningModal = ({ isOpen, onClose, lootbox, onOpen, opening }) => {
 };
 
 export default LootBoxOpeningModal;
+          {/* Result Stage */}
+          {stage === 'result' && wonItem && (
+            <motion.div
+              key="result"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex items-center justify-center min-h-screen p-8"
+            >
+              <div className="text-center space-y-8 max-w-lg">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: 'spring', duration: 0.6 }}
+                >
+                  <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                    YOU WON!
+                  </h2>
+                </motion.div>
+
+                <motion.div
+                  initial={{ y: 50, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className={`relative p-8 rounded-3xl bg-gradient-to-br ${getRarityGradient(wonItem.rarity)} shadow-2xl`}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl" />
+                  
+                  <div className="relative">
+                    {wonItem.image_url && (
+                      <motion.img
+                        src={wonItem.image_url}
+                        alt={wonItem.name}
+                        className="w-64 h-64 object-contain mx-auto mb-6"
+                        animate={{ 
+                          rotate: [0, -5, 5, 0],
+                          scale: [1, 1.05, 1]
+                        }}
+                        transition={{ 
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    )}
+                    
+                    <h3 className="text-3xl font-bold text-white mb-2">{wonItem.name}</h3>
+                    
+                    <div className={`inline-block px-4 py-2 rounded-full text-sm font-bold uppercase mb-4 bg-gradient-to-r ${getRarityGradient(wonItem.rarity)}`}>
+                      {wonItem.rarity}
+                    </div>
+                    
+                    <div className="text-4xl font-bold text-yellow-400">
+                      ${parseFloat(wonItem.value || 0).toFixed(2)}
+                    </div>
+                  </div>
+                </motion.div>
+
+                <div className="flex gap-4 justify-center">
+                  <Button
+                    variant="outline"
+                    onClick={onClose}
+                    className="min-w-[150px]"
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      setStage('ready');
+                      setWonItem(null);
+                    }}
+                    className="min-w-[150px]"
+                  >
+                    Open Another
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          )}
