@@ -14,6 +14,13 @@ const router = express.Router();
 router.get('/', asyncHandler(lootboxController.getAllLootboxes));
 
 /**
+ * @route   GET /api/v1/lootboxes/live-drops
+ * @desc    Get recent lootbox openings (live drops)
+ * @access  Public
+ */
+router.get('/live-drops', asyncHandler(lootboxController.getLiveDrops));
+
+/**
  * @route   GET /api/v1/lootboxes/:id
  * @desc    Get lootbox details
  * @access  Public
