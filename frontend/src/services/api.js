@@ -31,10 +31,15 @@ api.interceptors.request.use(
         const token = state?.token;
         if (token) {
           config.headers['Authorization'] = `Bearer ${token}`;
+          console.log('Token added to request:', token.substring(0, 20) + '...');
+        } else {
+          console.warn('No token found in auth storage');
         }
       } catch (e) {
         console.error('Error parsing auth storage:', e);
       }
+    } else {
+      console.warn('No auth-storage found in localStorage');
     }
 
     // Add CSRF token if available
@@ -48,6 +53,8 @@ api.interceptors.request.use(
     // Add language header
     const language = localStorage.getItem("i18nextLng") || "en";
     config.headers["Accept-Language"] = language;
+
+    console.log('Request headers:', config.headers);
 
     return config;
   },
