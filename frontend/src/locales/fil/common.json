@@ -1,0 +1,125 @@
+{
+  "nav": {
+    "lootboxes": "Mga Kahon",
+    "howItWorks": "Paano Ito Gumagana",
+    "fairness": "Patas na Sistema",
+    "inventory": "Imbentaryo",
+    "exchanger": "Palitan",
+    "deposit": "Magdeposito",
+    "profile": "Profile",
+    "support": "Suporta",
+    "admin": "Admin Panel",
+    "login": "Mag-login",
+    "register": "Mag-sign Up",
+    "logout": "Mag-logout"
+  },
+  "footer": {
+    "description": "Provably fair na loot box system para sa Adventure Quest Worlds. Magbukas ng mga kahon, mangolekta ng rare items, at makipagpalitan sa iba!",
+    "quickLinks": "Mabilis na Links",
+    "support": "Suporta",
+    "legal": "Legal",
+    "helpCenter": "Help Center",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "contact": "Makipag-ugnayan",
+    "ageRestriction": "18+ Lamang",
+    "responsibleGaming": "Maglaro nang Responsable",
+    "provablyFair": "Provably Fair System",
+    "rights": "Lahat ng karapatan ay nakalaan."
+  },
+  "home": {
+    "hero": {
+      "title": "I-unlock ang Legendary AQW Items",
+      "subtitle": "Magbukas ng provably fair loot boxes at mangolekta ng eksklusibong Adventure Quest Worlds items!",
+      "cta": "Tingnan ang Mga Kahon",
+      "stats": {
+        "users": "Aktibong Users",
+        "opened": "Nabukas na Kahon",
+        "items": "Natatanging Items"
+      }
+    },
+    "features": {
+      "title": "Bakit Piliin ang AQW Skins?",
+      "provablyFair": {
+        "title": "Provably Fair",
+        "description": "Ang aming cryptographic algorithm ay nagsisiguro na bawat pagbukas ay verified random at patas."
+      },
+      "instantDelivery": {
+        "title": "Instant Delivery",
+        "description": "Makatanggap ng iyong item codes kaagad pagkatapos magbukas. Walang paghihintay!"
+      },
+      "securePayments": {
+        "title": "Secure na Pagbabayad",
+        "description": "Maraming pagpipilian sa pagbabayad kabilang ang credit card, PayPal, at PIX."
+      },
+      "multiCurrency": {
+        "title": "Multi-Currency",
+        "description": "Suporta para sa USD, BRL, EUR, at PHP na may automatic conversion."
+      }
+    },
+    "liveDrops": {
+      "title": "Live Drops",
+      "subtitle": "Tingnan kung ano ang binubuksan ng iba sa real-time!"
+    }
+  },
+  "auth": {
+    "loginTitle": "Welcome Back",
+    "registerTitle": "Gumawa ng Account",
+    "email": "Email",
+    "username": "Username",
+    "password": "Password",
+    "confirmPassword": "Kumpirmahin ang Password",
+    "loginButton": "Mag-sign In",
+    "registerButton": "Gumawa ng Account",
+    "forgotPassword": "Nakalimutan ang password?",
+    "noAccount": "Walang account?",
+    "hasAccount": "Mayroon nang account?",
+    "signUpHere": "Mag-sign up dito",
+    "signInHere": "Mag-sign in dito"
+  },
+  "lootbox": {
+    "title": "Mga Kahon",
+    "price": "Presyo",
+    "open": "Buksan ang Kahon",
+    "openMultiple": "Buksan ang {{count}} Kahon",
+    "viewItems": "Tingnan ang Items",
+    "contains": "Naglalaman ng",
+    "dropRates": "Drop Rates",
+    "opening": "Binubuksan...",
+    "congratulations": "Binabati kita!",
+    "youWon": "Nanalo ka ng:",
+    "tryAgain": "Subukan Muli",
+    "goToInventory": "Pumunta sa Imbentaryo",
+    "insufficientBalance": "Kulang ang balanse. Mangyaring magdeposito."
+  },
+  "inventory": {
+    "title": "Aking Imbentaryo",
+    "empty": "Walang laman ang iyong imbentaryo",
+    "emptyDescription": "Magbukas ng mga kahon para mangolekta ng items!",
+    "totalValue": "Kabuuang Halaga",
+    "itemCount": "Mga Item",
+    "withdraw": "Withdraw",
+    "exchange": "Palitan",
+    "filterByRarity": "I-filter ayon sa rarity",
+    "sortBy": "Ayusin ayon sa",
+    "sortNewest": "Pinakabago",
+    "sortValue": "Halaga",
+    "sortRarity": "Rarity"
+  },
+  "common": {
+    "loading": "Naglo-load...",
+    "error": "Error",
+    "success": "Tagumpay",
+    "cancel": "Kanselahin",
+    "confirm": "Kumpirmahin",
+    "close": "Isara",
+    "save": "I-save",
+    "delete": "Burahin",
+    "edit": "I-edit",
+    "back": "Bumalik",
+    "next": "Susunod",
+    "search": "Maghanap...",
+    "noResults": "Walang nakitang resulta",
+    "loadMore": "Mag-load ng Higit Pa"
+  }
+}

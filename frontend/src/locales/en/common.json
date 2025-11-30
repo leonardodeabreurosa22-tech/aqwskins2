@@ -1,0 +1,125 @@
+{
+  "nav": {
+    "lootboxes": "Loot Boxes",
+    "howItWorks": "How It Works",
+    "fairness": "Provably Fair",
+    "inventory": "Inventory",
+    "exchanger": "Exchanger",
+    "deposit": "Deposit",
+    "profile": "Profile",
+    "support": "Support",
+    "admin": "Admin Panel",
+    "login": "Login",
+    "register": "Sign Up",
+    "logout": "Logout"
+  },
+  "footer": {
+    "description": "Provably fair loot box system for Adventure Quest Worlds. Open boxes, collect rare items, and trade with others!",
+    "quickLinks": "Quick Links",
+    "support": "Support",
+    "legal": "Legal",
+    "helpCenter": "Help Center",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "contact": "Contact Us",
+    "ageRestriction": "18+ Only",
+    "responsibleGaming": "Gamble Responsibly",
+    "provablyFair": "Provably Fair System",
+    "rights": "All rights reserved."
+  },
+  "home": {
+    "hero": {
+      "title": "Unlock Legendary AQW Items",
+      "subtitle": "Open provably fair loot boxes and collect exclusive Adventure Quest Worlds items!",
+      "cta": "Browse Loot Boxes",
+      "stats": {
+        "users": "Active Users",
+        "opened": "Boxes Opened",
+        "items": "Unique Items"
+      }
+    },
+    "features": {
+      "title": "Why Choose AQW Skins?",
+      "provablyFair": {
+        "title": "Provably Fair",
+        "description": "Our cryptographic algorithm ensures every opening is verifiably random and fair."
+      },
+      "instantDelivery": {
+        "title": "Instant Delivery",
+        "description": "Receive your item codes immediately after opening. No waiting required!"
+      },
+      "securePayments": {
+        "title": "Secure Payments",
+        "description": "Multiple payment options including credit card, PayPal, and PIX (Brazil)."
+      },
+      "multiCurrency": {
+        "title": "Multi-Currency",
+        "description": "Support for USD, BRL, EUR, and PHP with automatic conversion."
+      }
+    },
+    "liveDrops": {
+      "title": "Live Drops",
+      "subtitle": "See what others are unboxing in real-time!"
+    }
+  },
+  "auth": {
+    "loginTitle": "Welcome Back",
+    "registerTitle": "Create Account",
+    "email": "Email",
+    "username": "Username",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "loginButton": "Sign In",
+    "registerButton": "Create Account",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signUpHere": "Sign up here",
+    "signInHere": "Sign in here"
+  },
+  "lootbox": {
+    "title": "Loot Boxes",
+    "price": "Price",
+    "open": "Open Box",
+    "openMultiple": "Open {{count}} Boxes",
+    "viewItems": "View Items",
+    "contains": "Contains",
+    "dropRates": "Drop Rates",
+    "opening": "Opening...",
+    "congratulations": "Congratulations!",
+    "youWon": "You won:",
+    "tryAgain": "Try Again",
+    "goToInventory": "Go to Inventory",
+    "insufficientBalance": "Insufficient balance. Please deposit funds."
+  },
+  "inventory": {
+    "title": "My Inventory",
+    "empty": "Your inventory is empty",
+    "emptyDescription": "Open loot boxes to collect items!",
+    "totalValue": "Total Value",
+    "itemCount": "Items",
+    "withdraw": "Withdraw",
+    "exchange": "Exchange",
+    "filterByRarity": "Filter by rarity",
+    "sortBy": "Sort by",
+    "sortNewest": "Newest",
+    "sortValue": "Value",
+    "sortRarity": "Rarity"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search...",
+    "noResults": "No results found",
+    "loadMore": "Load More"
+  }
+}

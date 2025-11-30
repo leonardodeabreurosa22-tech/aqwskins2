@@ -1,0 +1,50 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Force LF for shell scripts
+*.sh text eol=lf
+
+# Force CRLF for Windows batch files
+*.bat text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.mp4 binary
+*.mp3 binary
+*.mov binary
+*.avi binary
+*.zip binary
+*.tar binary
+*.gz binary
+
+# Source code
+*.js text
+*.jsx text
+*.ts text
+*.tsx text
+*.json text
+*.css text
+*.scss text
+*.sass text
+*.html text
+*.xml text
+*.md text
+*.sql text
+*.yml text
+*.yaml text
+
+# Git merge drivers
+*.lock binary merge=ours
+package-lock.json binary merge=ours
+yarn.lock binary merge=ours
+pnpm-lock.yaml binary merge=ours

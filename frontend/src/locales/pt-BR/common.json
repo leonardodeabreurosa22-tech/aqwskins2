@@ -1,0 +1,125 @@
+{
+  "nav": {
+    "lootboxes": "Caixas",
+    "howItWorks": "Como Funciona",
+    "fairness": "Sistema Justo",
+    "inventory": "Inventário",
+    "exchanger": "Trocas",
+    "deposit": "Depositar",
+    "profile": "Perfil",
+    "support": "Suporte",
+    "admin": "Painel Admin",
+    "login": "Entrar",
+    "register": "Cadastrar",
+    "logout": "Sair"
+  },
+  "footer": {
+    "description": "Sistema de loot box comprovadamente justo para Adventure Quest Worlds. Abra caixas, colete itens raros e troque com outros!",
+    "quickLinks": "Links Rápidos",
+    "support": "Suporte",
+    "legal": "Legal",
+    "helpCenter": "Central de Ajuda",
+    "terms": "Termos de Serviço",
+    "privacy": "Política de Privacidade",
+    "contact": "Fale Conosco",
+    "ageRestriction": "Apenas 18+",
+    "responsibleGaming": "Jogue com Responsabilidade",
+    "provablyFair": "Sistema Comprovadamente Justo",
+    "rights": "Todos os direitos reservados."
+  },
+  "home": {
+    "hero": {
+      "title": "Desbloqueie Itens Lendários de AQW",
+      "subtitle": "Abra caixas comprovadamente justas e colete itens exclusivos de Adventure Quest Worlds!",
+      "cta": "Ver Caixas",
+      "stats": {
+        "users": "Usuários Ativos",
+        "opened": "Caixas Abertas",
+        "items": "Itens Únicos"
+      }
+    },
+    "features": {
+      "title": "Por Que Escolher AQW Skins?",
+      "provablyFair": {
+        "title": "Comprovadamente Justo",
+        "description": "Nosso algoritmo criptográfico garante que cada abertura seja verificavelmente aleatória e justa."
+      },
+      "instantDelivery": {
+        "title": "Entrega Instantânea",
+        "description": "Receba seus códigos de item imediatamente após a abertura. Sem espera!"
+      },
+      "securePayments": {
+        "title": "Pagamentos Seguros",
+        "description": "Múltiplas opções de pagamento incluindo cartão de crédito, PayPal e PIX."
+      },
+      "multiCurrency": {
+        "title": "Multi-Moedas",
+        "description": "Suporte para USD, BRL, EUR e PHP com conversão automática."
+      }
+    },
+    "liveDrops": {
+      "title": "Drops ao Vivo",
+      "subtitle": "Veja o que outros estão abrindo em tempo real!"
+    }
+  },
+  "auth": {
+    "loginTitle": "Bem-vindo de Volta",
+    "registerTitle": "Criar Conta",
+    "email": "E-mail",
+    "username": "Nome de Usuário",
+    "password": "Senha",
+    "confirmPassword": "Confirmar Senha",
+    "loginButton": "Entrar",
+    "registerButton": "Criar Conta",
+    "forgotPassword": "Esqueceu a senha?",
+    "noAccount": "Não tem uma conta?",
+    "hasAccount": "Já tem uma conta?",
+    "signUpHere": "Cadastre-se aqui",
+    "signInHere": "Entre aqui"
+  },
+  "lootbox": {
+    "title": "Caixas",
+    "price": "Preço",
+    "open": "Abrir Caixa",
+    "openMultiple": "Abrir {{count}} Caixas",
+    "viewItems": "Ver Itens",
+    "contains": "Contém",
+    "dropRates": "Taxas de Drop",
+    "opening": "Abrindo...",
+    "congratulations": "Parabéns!",
+    "youWon": "Você ganhou:",
+    "tryAgain": "Tentar Novamente",
+    "goToInventory": "Ir ao Inventário",
+    "insufficientBalance": "Saldo insuficiente. Por favor deposite fundos."
+  },
+  "inventory": {
+    "title": "Meu Inventário",
+    "empty": "Seu inventário está vazio",
+    "emptyDescription": "Abra caixas para coletar itens!",
+    "totalValue": "Valor Total",
+    "itemCount": "Itens",
+    "withdraw": "Sacar",
+    "exchange": "Trocar",
+    "filterByRarity": "Filtrar por raridade",
+    "sortBy": "Ordenar por",
+    "sortNewest": "Mais Novo",
+    "sortValue": "Valor",
+    "sortRarity": "Raridade"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "close": "Fechar",
+    "save": "Salvar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "search": "Buscar...",
+    "noResults": "Nenhum resultado encontrado",
+    "loadMore": "Carregar Mais"
+  }
+}

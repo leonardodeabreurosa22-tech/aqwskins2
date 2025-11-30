@@ -1,0 +1,125 @@
+{
+  "nav": {
+    "lootboxes": "Cajas",
+    "howItWorks": "Cómo Funciona",
+    "fairness": "Sistema Justo",
+    "inventory": "Inventario",
+    "exchanger": "Intercambio",
+    "deposit": "Depositar",
+    "profile": "Perfil",
+    "support": "Soporte",
+    "admin": "Panel Admin",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar Sesión"
+  },
+  "footer": {
+    "description": "Sistema de caja de botín demostrablemente justo para Adventure Quest Worlds. ¡Abre cajas, colecciona objetos raros e intercambia con otros!",
+    "quickLinks": "Enlaces Rápidos",
+    "support": "Soporte",
+    "legal": "Legal",
+    "helpCenter": "Centro de Ayuda",
+    "terms": "Términos de Servicio",
+    "privacy": "Política de Privacidad",
+    "contact": "Contáctenos",
+    "ageRestriction": "Solo 18+",
+    "responsibleGaming": "Juegue Responsablemente",
+    "provablyFair": "Sistema Demostrablemente Justo",
+    "rights": "Todos los derechos reservados."
+  },
+  "home": {
+    "hero": {
+      "title": "Desbloquea Objetos Legendarios de AQW",
+      "subtitle": "¡Abre cajas demostrablemente justas y colecciona objetos exclusivos de Adventure Quest Worlds!",
+      "cta": "Ver Cajas",
+      "stats": {
+        "users": "Usuarios Activos",
+        "opened": "Cajas Abiertas",
+        "items": "Objetos Únicos"
+      }
+    },
+    "features": {
+      "title": "¿Por Qué Elegir AQW Skins?",
+      "provablyFair": {
+        "title": "Demostrablemente Justo",
+        "description": "Nuestro algoritmo criptográfico garantiza que cada apertura sea verificablemente aleatoria y justa."
+      },
+      "instantDelivery": {
+        "title": "Entrega Instantánea",
+        "description": "Recibe tus códigos de objeto inmediatamente después de abrir. ¡Sin espera!"
+      },
+      "securePayments": {
+        "title": "Pagos Seguros",
+        "description": "Múltiples opciones de pago incluyendo tarjeta de crédito, PayPal y PIX."
+      },
+      "multiCurrency": {
+        "title": "Multi-Moneda",
+        "description": "Soporte para USD, BRL, EUR y PHP con conversión automática."
+      }
+    },
+    "liveDrops": {
+      "title": "Drops en Vivo",
+      "subtitle": "¡Ve lo que otros están abriendo en tiempo real!"
+    }
+  },
+  "auth": {
+    "loginTitle": "Bienvenido de Vuelta",
+    "registerTitle": "Crear Cuenta",
+    "email": "Correo Electrónico",
+    "username": "Nombre de Usuario",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "loginButton": "Iniciar Sesión",
+    "registerButton": "Crear Cuenta",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "noAccount": "¿No tienes una cuenta?",
+    "hasAccount": "¿Ya tienes una cuenta?",
+    "signUpHere": "Regístrate aquí",
+    "signInHere": "Inicia sesión aquí"
+  },
+  "lootbox": {
+    "title": "Cajas",
+    "price": "Precio",
+    "open": "Abrir Caja",
+    "openMultiple": "Abrir {{count}} Cajas",
+    "viewItems": "Ver Objetos",
+    "contains": "Contiene",
+    "dropRates": "Tasas de Drop",
+    "opening": "Abriendo...",
+    "congratulations": "¡Felicitaciones!",
+    "youWon": "Ganaste:",
+    "tryAgain": "Intentar de Nuevo",
+    "goToInventory": "Ir al Inventario",
+    "insufficientBalance": "Saldo insuficiente. Por favor deposite fondos."
+  },
+  "inventory": {
+    "title": "Mi Inventario",
+    "empty": "Tu inventario está vacío",
+    "emptyDescription": "¡Abre cajas para coleccionar objetos!",
+    "totalValue": "Valor Total",
+    "itemCount": "Objetos",
+    "withdraw": "Retirar",
+    "exchange": "Intercambiar",
+    "filterByRarity": "Filtrar por rareza",
+    "sortBy": "Ordenar por",
+    "sortNewest": "Más Nuevo",
+    "sortValue": "Valor",
+    "sortRarity": "Rareza"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "search": "Buscar...",
+    "noResults": "No se encontraron resultados",
+    "loadMore": "Cargar Más"
+  }
+}
