@@ -54,6 +54,91 @@ class LootBoxController {
   }
 
   /**
+   * Get lootbox items
+   */
+  async getLootboxItems(req, res) {
+    const { id } = req.params;
+    const isAdmin = req.user?.role === 'admin';
+
+    try {
+      // Get lootbox with items
+      const boxResult = await pool.query(
+        `SELECT id, items FROM lootboxes WHERE id = $1 AND status = 'active'`,
+        [id]
+      );
+
+      if (boxResult.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          error: 'Lootbox not found'
+        });
+      }
+
+      const lootbox = boxResult.rows[0];
+      const items = lootbox.items || [];
+
+      // Get full item details
+      const itemIds = items.map(item => item.id);
+      
+      if (itemIds.length === 0) {
+        return res.json({
+          success: true,
+          data: {
+            items: []
+          }
+        });
+      }
+
+      const itemsResult = await pool.query(
+        `SELECT * FROM items WHERE id = ANY($1)`,
+        [itemIds]
+      );
+
+      // Calculate probabilities
+      const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
+
+      // Enrich items with probability info
+      const enrichedItems = items.map(itemConfig => {
+        const fullItem = itemsResult.rows.find(i => i.id === itemConfig.id);
+        if (!fullItem) return null;
+
+        const probability = (itemConfig.weight / totalWeight) * 100;
+
+        return {
+          ...fullItem,
+          probability: isAdmin ? probability : this.getRarityRange(probability),
+          weight: isAdmin ? itemConfig.weight : undefined
+        };
+      }).filter(Boolean);
+
+      res.json({
+        success: true,
+        data: {
+          items: enrichedItems
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching lootbox items:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch items'
+      });
+    }
+  }
+
+  /**
+   * Get rarity range for probability (for non-admin users)
+   */
+  getRarityRange(probability) {
+    if (probability >= 50) return 'Very High';
+    if (probability >= 20) return 'High';
+    if (probability >= 10) return 'Medium';
+    if (probability >= 5) return 'Low';
+    if (probability >= 1) return 'Very Low';
+    return 'Extremely Rare';
+  }
+
+  /**
    * Open lootbox
    */
   async openLootbox(req, res) {

@@ -28,6 +28,13 @@ router.get('/live-drops', asyncHandler(lootboxController.getLiveDrops));
 router.get('/:id', asyncHandler(lootboxController.getLootboxDetails));
 
 /**
+ * @route   GET /api/v1/lootboxes/:id/items
+ * @desc    Get items in a lootbox
+ * @access  Public
+ */
+router.get('/:id/items', asyncHandler(lootboxController.getLootboxItems));
+
+/**
  * @route   POST /api/v1/lootboxes/:id/open
  * @desc    Open a lootbox
  * @access  Private
