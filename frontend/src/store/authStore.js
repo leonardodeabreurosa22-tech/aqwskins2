@@ -19,8 +19,14 @@ const useAuthStore = create(
           const response = await api.post("/auth/login", { email, password });
           const { user, token, refreshToken } = response.data.data;
 
+          // Normalize user data - ensure balance is a number
+          const normalizedUser = {
+            ...user,
+            balance: parseFloat(user.balance) || 0
+          };
+
           set({
-            user,
+            user: normalizedUser,
             token,
             refreshToken,
             isAuthenticated: true,
@@ -49,8 +55,14 @@ const useAuthStore = create(
           const response = await api.post("/auth/register", userData);
           const { user, token, refreshToken } = response.data.data;
 
+          // Normalize user data - ensure balance is a number
+          const normalizedUser = {
+            ...user,
+            balance: parseFloat(user.balance) || 0
+          };
+
           set({
-            user,
+            user: normalizedUser,
             token,
             refreshToken,
             isAuthenticated: true,
@@ -104,9 +116,17 @@ const useAuthStore = create(
 
       // Update user
       updateUser: (userData) => {
-        set((state) => ({
-          user: { ...state.user, ...userData },
-        }));
+        set((state) => {
+          // Normalize balance if it's being updated
+          const normalizedData = { ...userData };
+          if (normalizedData.balance !== undefined) {
+            normalizedData.balance = parseFloat(normalizedData.balance) || 0;
+          }
+          
+          return {
+            user: { ...state.user, ...normalizedData },
+          };
+        });
       },
 
       // Clear error
