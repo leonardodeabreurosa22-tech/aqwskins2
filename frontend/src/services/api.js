@@ -8,7 +8,9 @@ console.log("MODE:", import.meta.env.MODE);
 console.log("DEV:", import.meta.env.DEV);
 console.log("PROD:", import.meta.env.PROD);
 
-const baseURL = import.meta.env.VITE_API_URL || 'https://aqw-skins-backend.onrender.com/api/v1';
+const baseURL =
+  import.meta.env.VITE_API_URL ||
+  "https://aqw-skins-backend.onrender.com/api/v1";
 console.log("Using baseURL:", baseURL);
 
 const api = axios.create({
@@ -24,23 +26,29 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     // Add JWT token from zustand store
-    const authStore = localStorage.getItem('auth-storage');
+    const authStore = localStorage.getItem("auth-storage");
     if (authStore) {
       try {
         const parsed = JSON.parse(authStore);
         // Zustand persist wraps state in { state: {...} } or stores directly
         const token = parsed.state?.token || parsed.token;
         if (token) {
-          config.headers['Authorization'] = `Bearer ${token}`;
-          console.log('Token added to request:', token.substring(0, 20) + '...');
+          config.headers["Authorization"] = `Bearer ${token}`;
+          console.log(
+            "Token added to request:",
+            token.substring(0, 20) + "..."
+          );
         } else {
-          console.warn('No token found in auth storage. Storage content:', parsed);
+          console.warn(
+            "No token found in auth storage. Storage content:",
+            parsed
+          );
         }
       } catch (e) {
-        console.error('Error parsing auth storage:', e);
+        console.error("Error parsing auth storage:", e);
       }
     } else {
-      console.warn('No auth-storage found in localStorage');
+      console.warn("No auth-storage found in localStorage");
     }
 
     // Add CSRF token if available
@@ -55,7 +63,7 @@ api.interceptors.request.use(
     const language = localStorage.getItem("i18nextLng") || "en";
     config.headers["Accept-Language"] = language;
 
-    console.log('Request headers:', config.headers);
+    console.log("Request headers:", config.headers);
 
     return config;
   },
@@ -74,8 +82,8 @@ api.interceptors.response.use(
 
     // Handle network errors without infinite retry
     if (!error.response && !originalRequest._retry) {
-      console.error('Network error:', error.message);
-      toast.error('Unable to connect to server. Please check your connection.');
+      console.error("Network error:", error.message);
+      toast.error("Unable to connect to server. Please check your connection.");
       return Promise.reject(error);
     }
 
@@ -110,7 +118,7 @@ api.interceptors.response.use(
 
     // Handle 404 Not Found - Don't show toast for all 404s
     if (error.response?.status === 404) {
-      console.warn('Resource not found:', originalRequest.url);
+      console.warn("Resource not found:", originalRequest.url);
     }
 
     // Handle 429 Too Many Requests
@@ -120,7 +128,11 @@ api.interceptors.response.use(
 
     // Handle 500 Server Error - Don't spam toasts
     if (error.response?.status >= 500) {
-      console.error('Server error:', error.response?.status, originalRequest.url);
+      console.error(
+        "Server error:",
+        error.response?.status,
+        originalRequest.url
+      );
       // Only show toast if not already retrying
       if (!originalRequest._errorToastShown) {
         originalRequest._errorToastShown = true;

@@ -33,7 +33,10 @@ const useAuthStore = create(
 
           return { success: true };
         } catch (error) {
-          const errorMessage = error.response?.data?.error?.message || error.response?.data?.message || "Login failed";
+          const errorMessage =
+            error.response?.data?.error?.message ||
+            error.response?.data?.message ||
+            "Login failed";
           set({ isLoading: false, error: errorMessage });
           return { success: false, error: errorMessage };
         }
@@ -60,7 +63,9 @@ const useAuthStore = create(
           return { success: true };
         } catch (error) {
           const errorMessage =
-            error.response?.data?.error?.message || error.response?.data?.message || "Registration failed";
+            error.response?.data?.error?.message ||
+            error.response?.data?.message ||
+            "Registration failed";
           set({ isLoading: false, error: errorMessage });
           return { success: false, error: errorMessage };
         }

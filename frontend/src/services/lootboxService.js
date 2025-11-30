@@ -20,9 +20,9 @@ const lootboxService = {
   },
 
   // Open loot box
-  open: async (lootboxId, quantity = 1) => {
+  open: async (lootboxId) => {
     const response = await api.post(`/lootboxes/${lootboxId}/open`, {
-      quantity,
+      fingerprint: navigator.userAgent + Date.now(),
     });
     return response.data;
   },

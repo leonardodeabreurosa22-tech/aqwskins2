@@ -1,16 +1,16 @@
-import lootboxService from '../services/lootbox.service.js';
-import pool from '../config/database.js';
+import lootboxService from "../services/lootbox.service.js";
+import pool from "../config/database.js";
 
 /**
  * Get rarity range for probability (for non-admin users)
  */
 const getRarityRange = (probability) => {
-  if (probability >= 50) return 'Very High';
-  if (probability >= 20) return 'High';
-  if (probability >= 10) return 'Medium';
-  if (probability >= 5) return 'Low';
-  if (probability >= 1) return 'Very Low';
-  return 'Extremely Rare';
+  if (probability >= 50) return "Very High";
+  if (probability >= 20) return "High";
+  if (probability >= 10) return "Medium";
+  if (probability >= 5) return "Low";
+  if (probability >= 1) return "Very Low";
+  return "Extremely Rare";
 };
 
 /**
@@ -50,15 +50,15 @@ class LootBoxController {
       res.json({
         success: true,
         data: {
-          lootboxes: result.rows
-        }
+          lootboxes: result.rows,
+        },
       });
     } catch (error) {
-      console.error('Error fetching lootboxes:', error);
+      console.error("Error fetching lootboxes:", error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch lootboxes',
-        message: error.message
+        error: "Failed to fetch lootboxes",
+        message: error.message,
       });
     }
   }
@@ -69,15 +69,15 @@ class LootBoxController {
   async getLootboxDetails(req, res) {
     try {
       const { id } = req.params;
-      const isAdmin = req.user?.role === 'admin';
+      const isAdmin = req.user?.role === "admin";
 
       const result = await lootboxService.getLootBoxDetails(id, isAdmin);
       res.json(result);
     } catch (error) {
-      console.error('Error fetching lootbox details:', error);
+      console.error("Error fetching lootbox details:", error);
       res.status(error.statusCode || 500).json({
         success: false,
-        error: error.message || 'Failed to fetch lootbox details'
+        error: error.message || "Failed to fetch lootbox details",
       });
     }
   }
@@ -87,7 +87,7 @@ class LootBoxController {
    */
   async getLootboxItems(req, res) {
     const { id } = req.params;
-    const isAdmin = req.user?.role === 'admin';
+    const isAdmin = req.user?.role === "admin";
 
     try {
       // Get lootbox with items
@@ -99,7 +99,7 @@ class LootBoxController {
       if (boxResult.rows.length === 0) {
         return res.status(404).json({
           success: false,
-          error: 'Lootbox not found'
+          error: "Lootbox not found",
         });
       }
 
@@ -107,14 +107,14 @@ class LootBoxController {
       const items = lootbox.items || [];
 
       // Get full item details
-      const itemIds = items.map(item => item.id);
-      
+      const itemIds = items.map((item) => item.id);
+
       if (itemIds.length === 0) {
         return res.json({
           success: true,
           data: {
-            items: []
-          }
+            items: [],
+          },
         });
       }
 
@@ -127,31 +127,33 @@ class LootBoxController {
       const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
 
       // Enrich items with probability info
-      const enrichedItems = items.map(itemConfig => {
-        const fullItem = itemsResult.rows.find(i => i.id === itemConfig.id);
-        if (!fullItem) return null;
+      const enrichedItems = items
+        .map((itemConfig) => {
+          const fullItem = itemsResult.rows.find((i) => i.id === itemConfig.id);
+          if (!fullItem) return null;
 
-        const probability = (itemConfig.weight / totalWeight) * 100;
+          const probability = (itemConfig.weight / totalWeight) * 100;
 
-        return {
-          ...fullItem,
-          probability: isAdmin ? probability : getRarityRange(probability),
-          weight: isAdmin ? itemConfig.weight : undefined
-        };
-      }).filter(Boolean);
+          return {
+            ...fullItem,
+            probability: isAdmin ? probability : getRarityRange(probability),
+            weight: isAdmin ? itemConfig.weight : undefined,
+          };
+        })
+        .filter(Boolean);
 
       res.json({
         success: true,
         data: {
-          items: enrichedItems
-        }
+          items: enrichedItems,
+        },
       });
     } catch (error) {
-      console.error('Error fetching lootbox items:', error);
+      console.error("Error fetching lootbox items:", error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch items',
-        message: error.message
+        error: "Failed to fetch items",
+        message: error.message,
       });
     }
   }
@@ -211,17 +213,17 @@ class LootBoxController {
       res.json({
         success: true,
         data: {
-          drops: result.rows
-        }
+          drops: result.rows,
+        },
       });
     } catch (error) {
-      console.error('Error fetching live drops:', error);
+      console.error("Error fetching live drops:", error);
       // Return empty array if table doesn't exist or query fails
       res.json({
         success: true,
         data: {
-          drops: []
-        }
+          drops: [],
+        },
       });
     }
   }

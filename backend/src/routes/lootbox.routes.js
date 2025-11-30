@@ -1,8 +1,8 @@
-import express from 'express';
-import { authenticate } from '../middlewares/auth.js';
-import { lootboxRateLimiter } from '../middlewares/rateLimiter.js';
-import { asyncHandler } from '../middlewares/errorHandler.js';
-import lootboxController from '../controllers/lootbox.controller.js';
+import express from "express";
+import { authenticate } from "../middlewares/auth.js";
+import { lootboxRateLimiter } from "../middlewares/rateLimiter.js";
+import { asyncHandler } from "../middlewares/errorHandler.js";
+import lootboxController from "../controllers/lootbox.controller.js";
 
 const router = express.Router();
 
@@ -11,14 +11,14 @@ const router = express.Router();
  * @desc    Get all active lootboxes
  * @access  Public
  */
-router.get('/', asyncHandler(lootboxController.getAllLootboxes));
+router.get("/", asyncHandler(lootboxController.getAllLootboxes));
 
 /**
  * @route   GET /api/v1/lootboxes/live-drops
  * @desc    Get recent lootbox openings (live drops)
  * @access  Public
  */
-router.get('/live-drops', asyncHandler(lootboxController.getLiveDrops));
+router.get("/live-drops", asyncHandler(lootboxController.getLiveDrops));
 
 /**
  * @route   GET /api/v1/lootboxes/openings/history
@@ -26,7 +26,7 @@ router.get('/live-drops', asyncHandler(lootboxController.getLiveDrops));
  * @access  Private
  */
 router.get(
-  '/openings/history',
+  "/openings/history",
   authenticate,
   asyncHandler(lootboxController.getOpeningHistory)
 );
@@ -36,14 +36,14 @@ router.get(
  * @desc    Get items in a lootbox
  * @access  Public
  */
-router.get('/:id/items', asyncHandler(lootboxController.getLootboxItems));
+router.get("/:id/items", asyncHandler(lootboxController.getLootboxItems));
 
 /**
  * @route   GET /api/v1/lootboxes/:id
  * @desc    Get lootbox details
  * @access  Public
  */
-router.get('/:id', asyncHandler(lootboxController.getLootboxDetails));
+router.get("/:id", asyncHandler(lootboxController.getLootboxDetails));
 
 /**
  * @route   POST /api/v1/lootboxes/:id/open
@@ -51,7 +51,7 @@ router.get('/:id', asyncHandler(lootboxController.getLootboxDetails));
  * @access  Private
  */
 router.post(
-  '/:id/open',
+  "/:id/open",
   authenticate,
   lootboxRateLimiter,
   asyncHandler(lootboxController.openLootbox)

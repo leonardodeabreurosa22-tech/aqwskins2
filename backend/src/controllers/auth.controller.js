@@ -1,7 +1,7 @@
-import pool from '../config/database.js';
-import { AppError } from '../middlewares/errorHandler.js';
-import { hashPassword } from '../utils/crypto.js';
-import { logger } from '../utils/logger.js';
+import pool from "../config/database.js";
+import { AppError } from "../middlewares/errorHandler.js";
+import { hashPassword } from "../utils/crypto.js";
+import { logger } from "../utils/logger.js";
 
 /**
  * AUTH CONTROLLER
@@ -17,12 +17,12 @@ class AuthController {
 
       // Check if user exists
       const existingUser = await pool.query(
-        'SELECT id FROM users WHERE email = $1 OR username = $2',
+        "SELECT id FROM users WHERE email = $1 OR username = $2",
         [email, username]
       );
 
       if (existingUser.rows.length > 0) {
-        throw new AppError('User already exists', 409, 'USER_EXISTS');
+        throw new AppError("User already exists", 409, "USER_EXISTS");
       }
 
       // Hash password
@@ -38,7 +38,10 @@ class AuthController {
 
       const user = result.rows[0];
 
-      logger.info('New user registered', { userId: user.id, username: user.username });
+      logger.info("New user registered", {
+        userId: user.id,
+        username: user.username,
+      });
 
       res.status(201).json({
         success: true,
@@ -47,13 +50,13 @@ class AuthController {
             id: user.id,
             username: user.username,
             email: user.email,
-            role: user.role
+            role: user.role,
           },
-          message: 'Registration successful'
-        }
+          message: "Registration successful",
+        },
       });
     } catch (error) {
-      logger.error('Registration error:', error);
+      logger.error("Registration error:", error);
       throw error;
     }
   }
@@ -66,42 +69,48 @@ class AuthController {
       const { email, password } = req.body;
 
       // Get user
-      const result = await pool.query(
-        'SELECT * FROM users WHERE email = $1',
-        [email]
-      );
+      const result = await pool.query("SELECT * FROM users WHERE email = $1", [
+        email,
+      ]);
 
       if (result.rows.length === 0) {
-        throw new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS');
+        throw new AppError("Invalid credentials", 401, "INVALID_CREDENTIALS");
       }
 
       const user = result.rows[0];
 
       // Verify password
-      const { comparePassword } = await import('../utils/crypto.js');
+      const { comparePassword } = await import("../utils/crypto.js");
       const isValid = await comparePassword(password, user.password_hash);
 
       if (!isValid) {
-        throw new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS');
+        throw new AppError("Invalid credentials", 401, "INVALID_CREDENTIALS");
       }
 
       // Check if account is active
-      if (user.status !== 'active') {
-        throw new AppError('Account is suspended', 403, 'ACCOUNT_SUSPENDED');
+      if (user.status !== "active") {
+        throw new AppError("Account is suspended", 403, "ACCOUNT_SUSPENDED");
       }
 
       // Generate token
-      const { generateToken, generateRefreshToken } = await import('../utils/crypto.js');
-      const token = generateToken({ id: user.id, email: user.email, role: user.role });
+      const { generateToken, generateRefreshToken } =
+        await import("../utils/crypto.js");
+      const token = generateToken({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      });
       const refreshToken = generateRefreshToken({ id: user.id });
 
       // Update last login
-      await pool.query(
-        'UPDATE users SET last_login_at = NOW() WHERE id = $1',
-        [user.id]
-      );
+      await pool.query("UPDATE users SET last_login_at = NOW() WHERE id = $1", [
+        user.id,
+      ]);
 
-      logger.info('User logged in', { userId: user.id, username: user.username });
+      logger.info("User logged in", {
+        userId: user.id,
+        username: user.username,
+      });
 
       res.json({
         success: true,
@@ -111,14 +120,14 @@ class AuthController {
             username: user.username,
             email: user.email,
             role: user.role,
-            balance: user.balance
+            balance: user.balance,
           },
           token,
-          refreshToken
-        }
+          refreshToken,
+        },
       });
     } catch (error) {
-      logger.error('Login error:', error);
+      logger.error("Login error:", error);
       throw error;
     }
   }
@@ -132,7 +141,7 @@ class AuthController {
 
     res.json({
       success: true,
-      message: 'Logged out successfully'
+      message: "Logged out successfully",
     });
   }
 
@@ -144,24 +153,24 @@ class AuthController {
       const { refreshToken } = req.body;
 
       if (!refreshToken) {
-        throw new AppError('Refresh token required', 400, 'TOKEN_REQUIRED');
+        throw new AppError("Refresh token required", 400, "TOKEN_REQUIRED");
       }
 
-      const jwt = await import('jsonwebtoken');
+      const jwt = await import("jsonwebtoken");
       const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
       // Generate new access token
-      const { generateToken } = await import('../utils/crypto.js');
+      const { generateToken } = await import("../utils/crypto.js");
       const newToken = generateToken({ id: decoded.id });
 
       res.json({
         success: true,
         data: {
-          token: newToken
-        }
+          token: newToken,
+        },
       });
     } catch (error) {
-      logger.error('Refresh token error:', error);
+      logger.error("Refresh token error:", error);
       throw error;
     }
   }
@@ -181,11 +190,11 @@ class AuthController {
       res.json({
         success: true,
         data: {
-          user: result.rows[0]
-        }
+          user: result.rows[0],
+        },
       });
     } catch (error) {
-      logger.error('Get current user error:', error);
+      logger.error("Get current user error:", error);
       throw error;
     }
   }
@@ -197,7 +206,7 @@ class AuthController {
     // Implementation placeholder
     res.json({
       success: true,
-      message: 'Password reset email sent (if account exists)'
+      message: "Password reset email sent (if account exists)",
     });
   }
 
@@ -208,7 +217,7 @@ class AuthController {
     // Implementation placeholder
     res.json({
       success: true,
-      message: 'Password reset successful'
+      message: "Password reset successful",
     });
   }
 }
