@@ -88,7 +88,7 @@ const LootBoxDetail = () => {
                   <div className="text-sm text-gray-400 mb-1">{t('lootbox.price')}</div>
                   <div className="text-3xl font-bold text-primary-400">
                     ${lootbox.price.toFixed(2)}
-                  </span>
+                  </div>
                 </div>
                 <Button
                   variant="primary"
@@ -116,7 +116,6 @@ const LootBoxDetail = () => {
               {items.map((item) => (
                 <ItemCard key={item.id} item={item} showPrice showRarity />
               ))}
-            </div>
             </div>
           </div>
         </div>
