@@ -2,6 +2,18 @@ import lootboxService from '../services/lootbox.service.js';
 import pool from '../config/database.js';
 
 /**
+ * Get rarity range for probability (for non-admin users)
+ */
+const getRarityRange = (probability) => {
+  if (probability >= 50) return 'Very High';
+  if (probability >= 20) return 'High';
+  if (probability >= 10) return 'Medium';
+  if (probability >= 5) return 'Low';
+  if (probability >= 1) return 'Very Low';
+  return 'Extremely Rare';
+};
+
+/**
  * LOOTBOX CONTROLLER
  */
 class LootBoxController {
@@ -123,7 +135,7 @@ class LootBoxController {
 
         return {
           ...fullItem,
-          probability: isAdmin ? probability : this.getRarityRange(probability),
+          probability: isAdmin ? probability : getRarityRange(probability),
           weight: isAdmin ? itemConfig.weight : undefined
         };
       }).filter(Boolean);
@@ -138,21 +150,10 @@ class LootBoxController {
       console.error('Error fetching lootbox items:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch items'
+        error: 'Failed to fetch items',
+        message: error.message
       });
     }
-  }
-
-  /**
-   * Get rarity range for probability (for non-admin users)
-   */
-  getRarityRange(probability) {
-    if (probability >= 50) return 'Very High';
-    if (probability >= 20) return 'High';
-    if (probability >= 10) return 'Medium';
-    if (probability >= 5) return 'Low';
-    if (probability >= 1) return 'Very Low';
-    return 'Extremely Rare';
   }
 
   /**
