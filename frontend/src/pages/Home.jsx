@@ -21,14 +21,22 @@ const Home = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [boxesData, dropsData] = await Promise.all([
-        lootboxService.getAll(),
-        lootboxService.getLiveDrops(10),
-      ]);
-      setLootboxes(boxesData.slice(0, 3));
-      setLiveDrops(dropsData);
+      
+      // Load lootboxes (required)
+      const boxesData = await lootboxService.getAll();
+      setLootboxes(boxesData?.data?.lootboxes?.slice(0, 3) || []);
+      
+      // Load live drops (optional - may fail if backend not deployed yet)
+      try {
+        const dropsData = await lootboxService.getLiveDrops(10);
+        setLiveDrops(dropsData?.data?.drops || []);
+      } catch (dropsError) {
+        console.warn('Live drops not available yet:', dropsError);
+        setLiveDrops([]);
+      }
     } catch (error) {
       console.error('Failed to load data:', error);
+      setLootboxes([]);
     } finally {
       setLoading(false);
     }
