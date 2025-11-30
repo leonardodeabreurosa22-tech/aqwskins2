@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import api from '@services/api';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import api from "@services/api";
 
 const useAuthStore = create(
   persist(
@@ -16,9 +16,9 @@ const useAuthStore = create(
       login: async (email, password) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await api.post('/auth/login', { email, password });
+          const response = await api.post("/auth/login", { email, password });
           const { user, token, refreshToken } = response.data;
-          
+
           set({
             user,
             token,
@@ -29,11 +29,11 @@ const useAuthStore = create(
           });
 
           // Set token in API headers
-          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          
+          api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
           return { success: true };
         } catch (error) {
-          const errorMessage = error.response?.data?.message || 'Login failed';
+          const errorMessage = error.response?.data?.message || "Login failed";
           set({ isLoading: false, error: errorMessage });
           return { success: false, error: errorMessage };
         }
@@ -43,9 +43,9 @@ const useAuthStore = create(
       register: async (userData) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await api.post('/auth/register', userData);
+          const response = await api.post("/auth/register", userData);
           const { user, token, refreshToken } = response.data;
-          
+
           set({
             user,
             token,
@@ -55,11 +55,12 @@ const useAuthStore = create(
             error: null,
           });
 
-          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          
+          api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
           return { success: true };
         } catch (error) {
-          const errorMessage = error.response?.data?.message || 'Registration failed';
+          const errorMessage =
+            error.response?.data?.message || "Registration failed";
           set({ isLoading: false, error: errorMessage });
           return { success: false, error: errorMessage };
         }
@@ -74,7 +75,7 @@ const useAuthStore = create(
           isAuthenticated: false,
           error: null,
         });
-        delete api.defaults.headers.common['Authorization'];
+        delete api.defaults.headers.common["Authorization"];
       },
 
       // Refresh token
@@ -83,12 +84,12 @@ const useAuthStore = create(
         if (!refreshToken) return false;
 
         try {
-          const response = await api.post('/auth/refresh', { refreshToken });
+          const response = await api.post("/auth/refresh", { refreshToken });
           const { token: newToken } = response.data;
-          
+
           set({ token: newToken });
-          api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-          
+          api.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+
           return true;
         } catch (error) {
           get().logout();
@@ -107,7 +108,7 @@ const useAuthStore = create(
       clearError: () => set({ error: null }),
     }),
     {
-      name: 'auth-storage',
+      name: "auth-storage",
       partialize: (state) => ({
         user: state.user,
         token: state.token,
@@ -121,7 +122,7 @@ const useAuthStore = create(
 // Initialize token from storage
 const token = useAuthStore.getState().token;
 if (token) {
-  api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 }
 
 export default useAuthStore;

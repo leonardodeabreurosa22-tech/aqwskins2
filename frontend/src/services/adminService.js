@@ -1,15 +1,15 @@
-import api from './api';
+import api from "./api";
 
 const adminService = {
   // Dashboard Statistics
   getDashboardStats: async () => {
-    const response = await api.get('/admin/dashboard/stats');
+    const response = await api.get("/admin/dashboard/stats");
     return response.data;
   },
 
   // User Management
   getUsers: async (page = 1, limit = 20, filters = {}) => {
-    const response = await api.get('/admin/users', {
+    const response = await api.get("/admin/users", {
       params: { page, limit, ...filters },
     });
     return response.data;
@@ -32,12 +32,12 @@ const adminService = {
 
   // Loot Box Management
   getLootBoxes: async () => {
-    const response = await api.get('/admin/lootboxes');
+    const response = await api.get("/admin/lootboxes");
     return response.data;
   },
 
   createLootBox: async (data) => {
-    const response = await api.post('/admin/lootboxes', data);
+    const response = await api.post("/admin/lootboxes", data);
     return response.data;
   },
 
@@ -53,14 +53,14 @@ const adminService = {
 
   // Item Management
   getItems: async (page = 1, limit = 50) => {
-    const response = await api.get('/admin/items', {
+    const response = await api.get("/admin/items", {
       params: { page, limit },
     });
     return response.data;
   },
 
   createItem: async (data) => {
-    const response = await api.post('/admin/items', data);
+    const response = await api.post("/admin/items", data);
     return response.data;
   },
 
@@ -81,28 +81,34 @@ const adminService = {
 
   // Withdrawal Management
   getPendingWithdrawals: async () => {
-    const response = await api.get('/admin/withdrawals/pending');
+    const response = await api.get("/admin/withdrawals/pending");
     return response.data;
   },
 
   approveWithdrawal: async (withdrawalId, itemCode) => {
-    const response = await api.post(`/admin/withdrawals/${withdrawalId}/approve`, { itemCode });
+    const response = await api.post(
+      `/admin/withdrawals/${withdrawalId}/approve`,
+      { itemCode }
+    );
     return response.data;
   },
 
   rejectWithdrawal: async (withdrawalId, reason) => {
-    const response = await api.post(`/admin/withdrawals/${withdrawalId}/reject`, { reason });
+    const response = await api.post(
+      `/admin/withdrawals/${withdrawalId}/reject`,
+      { reason }
+    );
     return response.data;
   },
 
   // Coupon Management
   getCoupons: async () => {
-    const response = await api.get('/admin/coupons');
+    const response = await api.get("/admin/coupons");
     return response.data;
   },
 
   createCoupon: async (data) => {
-    const response = await api.post('/admin/coupons', data);
+    const response = await api.post("/admin/coupons", data);
     return response.data;
   },
 
@@ -113,7 +119,7 @@ const adminService = {
 
   // Audit Logs
   getAuditLogs: async (page = 1, limit = 50, filters = {}) => {
-    const response = await api.get('/admin/audit-logs', {
+    const response = await api.get("/admin/audit-logs", {
       params: { page, limit, ...filters },
     });
     return response.data;

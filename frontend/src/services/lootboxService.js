@@ -1,9 +1,9 @@
-import api from './api';
+import api from "./api";
 
 const lootboxService = {
   // Get all loot boxes
   getAll: async () => {
-    const response = await api.get('/lootboxes');
+    const response = await api.get("/lootboxes");
     return response.data;
   },
 
@@ -21,7 +21,7 @@ const lootboxService = {
 
   // Open loot box
   open: async (lootboxId, quantity = 1) => {
-    const response = await api.post('/lootboxes/open', {
+    const response = await api.post("/lootboxes/open", {
       lootboxId,
       quantity,
     });
@@ -30,7 +30,7 @@ const lootboxService = {
 
   // Get opening history
   getHistory: async (page = 1, limit = 20) => {
-    const response = await api.get('/lootboxes/history', {
+    const response = await api.get("/lootboxes/history", {
       params: { page, limit },
     });
     return response.data;
@@ -38,7 +38,7 @@ const lootboxService = {
 
   // Verify fairness
   verifyFairness: async (openingId) => {
-    const response = await api.post('/fairness/verify', {
+    const response = await api.post("/fairness/verify", {
       openingId,
     });
     return response.data;
@@ -46,7 +46,7 @@ const lootboxService = {
 
   // Get live drops (recent openings)
   getLiveDrops: async (limit = 50) => {
-    const response = await api.get('/lootboxes/live-drops', {
+    const response = await api.get("/lootboxes/live-drops", {
       params: { limit },
     });
     return response.data;
@@ -54,7 +54,7 @@ const lootboxService = {
 
   // Use coupon code
   useCoupon: async (code) => {
-    const response = await api.post('/coupons/use', { code });
+    const response = await api.post("/coupons/use", { code });
     return response.data;
   },
 };

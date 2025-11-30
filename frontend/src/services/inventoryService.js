@@ -1,9 +1,9 @@
-import api from './api';
+import api from "./api";
 
 const inventoryService = {
   // Get user inventory
   getInventory: async (page = 1, limit = 50, filters = {}) => {
-    const response = await api.get('/inventory', {
+    const response = await api.get("/inventory", {
       params: { page, limit, ...filters },
     });
     return response.data;
@@ -17,13 +17,13 @@ const inventoryService = {
 
   // Get inventory statistics
   getStats: async () => {
-    const response = await api.get('/inventory/stats');
+    const response = await api.get("/inventory/stats");
     return response.data;
   },
 
   // Request withdrawal
   requestWithdrawal: async (inventoryItemId) => {
-    const response = await api.post('/withdraw/request', {
+    const response = await api.post("/withdraw/request", {
       inventoryItemId,
     });
     return response.data;
@@ -31,7 +31,7 @@ const inventoryService = {
 
   // Get withdrawal history
   getWithdrawals: async (page = 1, limit = 20) => {
-    const response = await api.get('/withdraw/history', {
+    const response = await api.get("/withdraw/history", {
       params: { page, limit },
     });
     return response.data;

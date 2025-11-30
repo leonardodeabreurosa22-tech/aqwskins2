@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 const useUIStore = create((set) => ({
   // Modal state
@@ -26,11 +26,11 @@ const useUIStore = create((set) => ({
   notification: null,
 
   // Currency & Language
-  currency: localStorage.getItem('currency') || 'USD',
-  language: localStorage.getItem('i18nextLng') || 'en',
+  currency: localStorage.getItem("currency") || "USD",
+  language: localStorage.getItem("i18nextLng") || "en",
 
   // Theme (for future dark mode)
-  theme: 'dark',
+  theme: "dark",
 
   // Open modal
   openModal: (modalName, data = null) =>
@@ -73,20 +73,20 @@ const useUIStore = create((set) => ({
 
   // Set currency
   setCurrency: (currency) => {
-    localStorage.setItem('currency', currency);
+    localStorage.setItem("currency", currency);
     set({ currency });
   },
 
   // Set language
   setLanguage: (language) => {
-    localStorage.setItem('i18nextLng', language);
+    localStorage.setItem("i18nextLng", language);
     set({ language });
   },
 
   // Toggle theme
   toggleTheme: () =>
     set((state) => ({
-      theme: state.theme === 'dark' ? 'light' : 'dark',
+      theme: state.theme === "dark" ? "light" : "dark",
     })),
 }));
 

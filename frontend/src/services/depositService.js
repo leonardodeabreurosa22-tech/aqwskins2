@@ -1,21 +1,21 @@
-import api from './api';
+import api from "./api";
 
 const depositService = {
   // Get supported currencies
   getCurrencies: async () => {
-    const response = await api.get('/deposits/currencies');
+    const response = await api.get("/deposits/currencies");
     return response.data;
   },
 
   // Get payment methods
   getPaymentMethods: async () => {
-    const response = await api.get('/deposits/methods');
+    const response = await api.get("/deposits/methods");
     return response.data;
   },
 
   // Create Stripe checkout session
   createStripeSession: async (amount, currency) => {
-    const response = await api.post('/deposits/stripe/create-session', {
+    const response = await api.post("/deposits/stripe/create-session", {
       amount,
       currency,
     });
@@ -24,7 +24,7 @@ const depositService = {
 
   // Create PayPal order
   createPayPalOrder: async (amount, currency) => {
-    const response = await api.post('/deposits/paypal/create-order', {
+    const response = await api.post("/deposits/paypal/create-order", {
       amount,
       currency,
     });
@@ -33,7 +33,7 @@ const depositService = {
 
   // Generate PIX QR Code
   generatePixQRCode: async (amount) => {
-    const response = await api.post('/deposits/pix/generate', {
+    const response = await api.post("/deposits/pix/generate", {
       amount,
     });
     return response.data;
@@ -41,7 +41,7 @@ const depositService = {
 
   // Get deposit history
   getDepositHistory: async (page = 1, limit = 20) => {
-    const response = await api.get('/deposits/history', {
+    const response = await api.get("/deposits/history", {
       params: { page, limit },
     });
     return response.data;
@@ -49,7 +49,7 @@ const depositService = {
 
   // Get currency conversion rate
   getConversionRate: async (fromCurrency, toCurrency, amount) => {
-    const response = await api.get('/deposits/convert', {
+    const response = await api.get("/deposits/convert", {
       params: { from: fromCurrency, to: toCurrency, amount },
     });
     return response.data;
