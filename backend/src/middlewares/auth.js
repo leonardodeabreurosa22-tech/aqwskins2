@@ -42,6 +42,7 @@ export const authenticate = async (req, res, next) => {
 
     // Check if user is active
     if (user.status !== 'active') {
+      logger.warn(`Blocked login attempt for inactive user: ${user.id}, status: ${user.status}`);
       throw new AppError('Account is suspended or inactive', 403, 'ACCOUNT_INACTIVE');
     }
 
@@ -52,6 +53,8 @@ export const authenticate = async (req, res, next) => {
       username: user.username,
       role: user.role
     };
+
+    logger.debug(`User authenticated: ${user.username} (${user.id})`);
 
     next();
   } catch (error) {

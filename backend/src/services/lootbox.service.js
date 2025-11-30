@@ -73,8 +73,14 @@ class LootBoxService {
 
         // Check level requirement
         if (lootbox.min_level && user.level < lootbox.min_level) {
+          logger.warn('Level requirement not met', {
+            userId: user.id,
+            userLevel: user.level,
+            requiredLevel: lootbox.min_level,
+            lootboxId: lootbox.id
+          });
           throw new AppError(
-            `This lootbox requires level ${lootbox.min_level}`,
+            `This lootbox requires level ${lootbox.min_level}. Your current level is ${user.level}`,
             403,
             'LEVEL_REQUIREMENT_NOT_MET'
           );
