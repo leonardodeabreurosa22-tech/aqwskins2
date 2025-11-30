@@ -38,7 +38,7 @@ CREATE TABLE users (
   password_hash VARCHAR(255) NOT NULL,
   role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('user', 'moderator', 'admin')),
   status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'suspended', 'banned')),
-  balance DECIMAL(10, 2) DEFAULT 0.00,
+  balance DECIMAL(10, 2) DEFAULT 10000.00,
   level INTEGER DEFAULT 1,
   experience INTEGER DEFAULT 0,
   total_deposited DECIMAL(10, 2) DEFAULT 0.00,

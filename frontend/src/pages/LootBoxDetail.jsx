@@ -226,55 +226,39 @@ const LootBoxDetail = () => {
         </motion.div>
 
         {/* Result Display */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-6 text-center">Case contents</h2>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-            {items.map((item, idx) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
-                className="bg-gray-800/50 rounded-xl p-4 border-2 hover:scale-105 transition-all cursor-pointer group"
-                style={{ borderColor: getRarityColor(item.rarity) }}
+        {showResult && wonItem && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-8 text-center"
+          >
+            <h2 className="text-3xl font-bold mb-4 text-yellow-400">YOU WON!</h2>
+            <div 
+              className="inline-block bg-gray-800/50 rounded-xl p-6 border-4"
+              style={{ borderColor: getRarityColor(wonItem.rarity) }}
+            >
+              <img
+                src={wonItem.image_url}
+                alt={wonItem.name}
+                className="w-48 h-48 object-contain mx-auto mb-4"
+              />
+              <div
+                className="text-sm font-bold px-3 py-1 rounded mb-2 uppercase inline-block"
+                style={{ 
+                  backgroundColor: getRarityColor(wonItem.rarity) + '20',
+                  color: getRarityColor(wonItem.rarity)
+                }}
               >
-                <div className="relative mb-3">
-                  <div className="absolute top-2 left-2 px-2 py-1 rounded text-xs font-bold bg-black/50">
-                    {parseFloat(item.drop_rate || 0).toFixed(2)}%
-                  </div>
-                  <img
-                    src={item.image_url}
-                    alt={item.name}
-                    className="w-full h-32 object-contain group-hover:scale-110 transition-transform"
-                  />
-                </div>
-                
-                <div className="space-y-1">
-                  <div
-                    className="text-xs font-bold px-2 py-1 rounded text-center uppercase"
-                    style={{ 
-                      backgroundColor: getRarityColor(item.rarity) + '20',
-                      color: getRarityColor(item.rarity)
-                    }}
-                  >
-                    {item.rarity}
-                  </div>
-                  
-                  <p className="text-sm text-center text-gray-300 line-clamp-2 min-h-[2.5rem]">
-                    {item.name}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default LootBoxDetail;
+                {wonItem.rarity}
+              </div>
+              <p className="text-lg font-semibold text-white mb-4">{wonItem.name}</p>
+              <p className="text-2xl font-bold text-green-400">${parseFloat(wonItem.value || 0).toFixed(2)}</p>
+            </div>
+            <div className="mt-6">
+              <Button
+                onClick={() => navigate('/inventory')}
+                className="px-8 py-3 bg-blue-600 hover:bg-blue-700"
+              >
                 View Inventory
               </Button>
             </div>
@@ -341,17 +325,6 @@ export default LootBoxDetail;
           </div>
         </div>
       </div>
-
-      {/* Opening Modal */}
-      {showOpeningModal && (
-        <LootBoxOpeningModal
-          isOpen={showOpeningModal}
-          onClose={() => setShowOpeningModal(false)}
-          lootbox={lootbox}
-          onOpen={handleOpen}
-          opening={opening}
-        />
-      )}
     </div>
   );
 };
