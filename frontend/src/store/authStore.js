@@ -17,7 +17,7 @@ const useAuthStore = create(
         set({ isLoading: true, error: null });
         try {
           const response = await api.post("/auth/login", { email, password });
-          const { user, token, refreshToken } = response.data;
+          const { user, token, refreshToken } = response.data.data;
 
           set({
             user,
@@ -33,7 +33,7 @@ const useAuthStore = create(
 
           return { success: true };
         } catch (error) {
-          const errorMessage = error.response?.data?.message || "Login failed";
+          const errorMessage = error.response?.data?.error?.message || error.response?.data?.message || "Login failed";
           set({ isLoading: false, error: errorMessage });
           return { success: false, error: errorMessage };
         }
@@ -44,7 +44,7 @@ const useAuthStore = create(
         set({ isLoading: true, error: null });
         try {
           const response = await api.post("/auth/register", userData);
-          const { user, token, refreshToken } = response.data;
+          const { user, token, refreshToken } = response.data.data;
 
           set({
             user,
@@ -60,7 +60,7 @@ const useAuthStore = create(
           return { success: true };
         } catch (error) {
           const errorMessage =
-            error.response?.data?.message || "Registration failed";
+            error.response?.data?.error?.message || error.response?.data?.message || "Registration failed";
           set({ isLoading: false, error: errorMessage });
           return { success: false, error: errorMessage };
         }
@@ -85,7 +85,7 @@ const useAuthStore = create(
 
         try {
           const response = await api.post("/auth/refresh", { refreshToken });
-          const { token: newToken } = response.data;
+          const { token: newToken } = response.data.data;
 
           set({ token: newToken });
           api.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
