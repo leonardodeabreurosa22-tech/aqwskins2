@@ -88,15 +88,14 @@ const LootBoxDetail = () => {
                   <div className="text-sm text-gray-400 mb-1">{t('lootbox.price')}</div>
                   <div className="text-3xl font-bold text-primary-400">
                     ${lootbox.price.toFixed(2)}
+                  </span>
+                </div>
                 <Button
                   variant="primary"
                   fullWidth
                   size="lg"
                   onClick={handleOpenClick}
                   disabled={!isAuthenticated || user?.balance < lootbox.price}
-                >
-                  {t('lootbox.open')}
-                </Button>d={!isAuthenticated || user?.balance < lootbox.price}
                 >
                   {t('lootbox.open')}
                 </Button>
