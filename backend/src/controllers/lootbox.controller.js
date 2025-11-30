@@ -189,9 +189,9 @@ class LootBoxController {
       const query = `
         SELECT 
           lo.id,
-          lo.created_at,
+          lo.opened_at as created_at,
           u.username,
-          u.avatar_url,
+          u.profile_picture as avatar_url,
           lb.name as lootbox_name,
           lb.image_url as lootbox_image,
           i.name as item_name,
@@ -202,7 +202,7 @@ class LootBoxController {
         JOIN users u ON lo.user_id = u.id
         JOIN lootboxes lb ON lo.lootbox_id = lb.id
         JOIN items i ON lo.item_id = i.id
-        ORDER BY lo.created_at DESC
+        ORDER BY lo.opened_at DESC
         LIMIT $1
       `;
 

@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 
 /**
  * Generate cryptographically secure random integer
@@ -81,7 +82,6 @@ export const comparePassword = async (password, hash) => {
  * @returns {string} - JWT token
  */
 export const generateToken = (payload, expiresIn = process.env.JWT_EXPIRES_IN) => {
-  const jwt = require('jsonwebtoken');
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
 };
 
@@ -91,7 +91,6 @@ export const generateToken = (payload, expiresIn = process.env.JWT_EXPIRES_IN) =
  * @returns {string} - Refresh token
  */
 export const generateRefreshToken = (payload) => {
-  const jwt = require('jsonwebtoken');
   return jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
     expiresIn: process.env.JWT_REFRESH_EXPIRES_IN
   });
