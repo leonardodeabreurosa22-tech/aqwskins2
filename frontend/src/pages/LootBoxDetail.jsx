@@ -216,7 +216,16 @@ const LootBoxDetail = () => {
                   <img
                     src={item?.image_url}
                     alt={item?.name}
-        {/* Case Contents */}
+                    className="w-full h-24 object-contain mb-2"
+                  />
+                  <p className="text-xs text-center truncate text-gray-300">{item?.name}</p>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* Result Display */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold mb-6 text-center">Case contents</h2>
           
