@@ -247,23 +247,20 @@ const LootBoxDetail = () => {
 
         {/* Top Preview Row */}
         <div className="mb-8 overflow-hidden">
-          <div className="flex gap-4 justify-center px-4">
+          <h3 className="text-lg font-semibold mb-4 text-center text-gray-300">Preview</h3>
+          <div className="flex flex-wrap justify-center items-stretch w-full max-w-5xl mx-auto">
             {items.slice(0, 7).map((item, idx) => (
               <div
                 key={item.id}
-                className="flex-shrink-0 w-32 sm:w-36 md:w-40"
+                className="m-2 w-[157px] lg:w-[210px] bg-gradient-to-b from-transparent to-gray-700/80 border border-gray-600 rounded-md p-3 flex flex-col items-center justify-center hover:border-primary-500 transition-all shadow-inner"
+                style={{ boxShadow: 'inset 0 0 75px rgba(13, 35, 69, 1)', borderColor: getRarityColor(item.rarity) }}
               >
-                <div 
-                  className="bg-gray-800/50 rounded-xl p-3 border-2 transition-all hover:scale-105"
-                  style={{ borderColor: getRarityColor(item.rarity) }}
-                >
-                  <img
-                    src={item.image_url}
-                    alt={item.name}
-                    className="w-full h-24 object-contain mb-2"
-                  />
-                  <p className="text-xs text-center truncate text-gray-300">{item.name}</p>
-                </div>
+                <img
+                  src={item.image_url}
+                  alt={item.name}
+                  className="w-full h-20 lg:h-24 object-contain mb-2"
+                />
+                <p className="text-xs text-center truncate w-full text-gray-300">{item.name}</p>
               </div>
             ))}
           </div>

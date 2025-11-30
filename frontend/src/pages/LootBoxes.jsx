@@ -34,24 +34,26 @@ const LootBoxes = () => {
       <div className="container-custom">
         <h1 className="page-header">{t('lootbox.title')}</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Flex-wrap layout matching test file structure */}
+        <div className="flex flex-wrap justify-center items-stretch w-full">
           {lootboxes.map((box) => (
-            <Link key={box.id} to={`/lootbox/${box.id}`}>
+            <Link key={box.id} to={`/lootbox/${box.id}`} className="m-2">
               <motion.div
                 whileHover={{ scale: 1.03, y: -5 }}
-                className="card-hover"
+                className="card-hover h-full w-[157px] lg:w-[210px] bg-gradient-to-b from-transparent to-gray-700/80 border border-gray-600 rounded-md shadow-inner"
+                style={{ boxShadow: 'inset 0 0 75px rgba(13, 35, 69, 1)' }}
               >
-                <div className="aspect-video bg-gradient-to-br from-primary-600 to-secondary-600 flex items-center justify-center">
-                  <FiBox className="w-24 h-24 text-white" />
+                <div className="aspect-video bg-gradient-to-br from-primary-600 to-secondary-600 rounded-t-md flex items-center justify-center">
+                  <FiBox className="w-16 h-16 lg:w-20 lg:h-20 text-white" />
                 </div>
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold mb-2">{box.name}</h3>
-                  <p className="text-gray-400 mb-4 line-clamp-2">{box.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-primary-400">
+                <div className="p-3 lg:p-4">
+                  <h3 className="text-sm lg:text-base font-bold mb-1 truncate">{box.name}</h3>
+                  <p className="text-xs text-gray-400 mb-2 line-clamp-2">{box.description}</p>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-base lg:text-lg font-bold text-primary-400">
                       ${parseFloat(box.price || 0).toFixed(2)}
                     </span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-xs text-gray-500">
                       {box.openCount || 0} opened
                     </span>
                   </div>
