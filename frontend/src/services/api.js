@@ -23,6 +23,20 @@ const api = axios.create({
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
+    // Add JWT token from zustand store
+    const authStore = localStorage.getItem('auth-storage');
+    if (authStore) {
+      try {
+        const { state } = JSON.parse(authStore);
+        const token = state?.token;
+        if (token) {
+          config.headers['Authorization'] = `Bearer ${token}`;
+        }
+      } catch (e) {
+        console.error('Error parsing auth storage:', e);
+      }
+    }
+
     // Add CSRF token if available
     const csrfToken = document
       .querySelector('meta[name="csrf-token"]')
