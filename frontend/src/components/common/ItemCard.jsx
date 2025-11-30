@@ -32,7 +32,7 @@ const ItemCard = ({ item, onClick, showPrice = true, showRarity = true, compact 
         </div>
         <p className="text-sm font-semibold truncate">{item.name}</p>
         {showPrice && item.value && (
-          <p className="text-xs text-gray-300">${item.value.toFixed(2)}</p>
+          <p className="text-xs text-gray-300">${parseFloat(item.value || 0).toFixed(2)}</p>
         )}
       </motion.div>
     );
@@ -69,13 +69,13 @@ const ItemCard = ({ item, onClick, showPrice = true, showRarity = true, compact 
         <div className="flex items-center justify-between">
           {showPrice && item.value && (
             <span className="text-xl font-bold text-primary-400">
-              ${item.value.toFixed(2)}
+              ${parseFloat(item.value || 0).toFixed(2)}
             </span>
           )}
           
           {item.dropRate && (
             <span className="text-xs text-gray-400">
-              {item.dropRate.toFixed(2)}%
+              {parseFloat(item.dropRate || 0).toFixed(2)}%
             </span>
           )}
         </div>
