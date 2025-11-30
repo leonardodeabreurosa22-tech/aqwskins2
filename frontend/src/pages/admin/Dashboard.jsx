@@ -301,7 +301,7 @@ const Dashboard = () => {
                       <tr key={user.id} className="border-b border-gray-800">
                         <td className="py-3 px-4">{user.username}</td>
                         <td className="py-3 px-4">{user.email}</td>
-                        <td className="py-3 px-4">${user.balance?.toFixed(2)}</td>
+                        <td className="py-3 px-4">${parseFloat(user.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                         <td className="py-3 px-4">
                           <span className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-sm">
                             {user.role}

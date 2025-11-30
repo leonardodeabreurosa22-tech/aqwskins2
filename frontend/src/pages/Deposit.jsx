@@ -143,7 +143,7 @@ const Deposit = () => {
               <p className="text-sm text-gray-400 mb-2">Current Balance</p>
               <p className="text-4xl font-bold">
                 {getCurrencySymbol(selectedCurrency)}
-                {user?.balance?.toFixed(2) || '0.00'}
+                {parseFloat(user?.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
             </div>
 

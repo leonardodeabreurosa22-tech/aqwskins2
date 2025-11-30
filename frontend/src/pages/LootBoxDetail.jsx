@@ -57,7 +57,7 @@ const LootBoxDetail = () => {
     console.log('Balance check:', { userBalance, boxPrice, hasEnough: userBalance >= boxPrice });
 
     if (!user || userBalance < boxPrice) {
-      toast.error(`Insufficient balance. You have $${userBalance.toFixed(2)} but need $${boxPrice.toFixed(2)}`);
+      toast.error(`Insufficient balance. You have $${userBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} but need $${boxPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
       return;
     }
 

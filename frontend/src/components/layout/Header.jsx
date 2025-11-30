@@ -89,7 +89,7 @@ const Header = () => {
                     <FiUser />
                     <span className="text-sm font-medium">{user?.username}</span>
                     <span className="text-xs text-primary-400">
-                      ${parseFloat(user?.balance || 0).toFixed(2)}
+                      ${parseFloat(user?.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </button>
 
