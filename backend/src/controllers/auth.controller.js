@@ -12,45 +12,50 @@ class AuthController {
    * Register new user
    */
   async register(req, res) {
-    const { username, email, password } = req.body;
+    try {
+      const { username, email, password } = req.body;
 
-    // Check if user exists
-    const existingUser = await pool.query(
-      'SELECT id FROM users WHERE email = $1 OR username = $2',
-      [email, username]
-    );
+      // Check if user exists
+      const existingUser = await pool.query(
+        'SELECT id FROM users WHERE email = $1 OR username = $2',
+        [email, username]
+      );
 
-    if (existingUser.rows.length > 0) {
-      throw new AppError('User already exists', 409, 'USER_EXISTS');
-    }
-
-    // Hash password
-    const passwordHash = await hashPassword(password);
-
-    // Create user
-    const result = await pool.query(
-      `INSERT INTO users (username, email, password_hash, created_at)
-       VALUES ($1, $2, $3, NOW())
-       RETURNING id, username, email, role, created_at`,
-      [username, email, passwordHash]
-    );
-
-    const user = result.rows[0];
-
-    logger.info('New user registered', { userId: user.id, username: user.username });
-
-    res.status(201).json({
-      success: true,
-      data: {
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          role: user.role
-        },
-        message: 'Registration successful'
+      if (existingUser.rows.length > 0) {
+        throw new AppError('User already exists', 409, 'USER_EXISTS');
       }
-    });
+
+      // Hash password
+      const passwordHash = await hashPassword(password);
+
+      // Create user
+      const result = await pool.query(
+        `INSERT INTO users (username, email, password_hash, created_at)
+         VALUES ($1, $2, $3, NOW())
+         RETURNING id, username, email, role, created_at`,
+        [username, email, passwordHash]
+      );
+
+      const user = result.rows[0];
+
+      logger.info('New user registered', { userId: user.id, username: user.username });
+
+      res.status(201).json({
+        success: true,
+        data: {
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            role: user.role
+          },
+          message: 'Registration successful'
+        }
+      });
+    } catch (error) {
+      logger.error('Registration error:', error);
+      throw error;
+    }
   }
 
   /**

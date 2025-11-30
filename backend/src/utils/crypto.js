@@ -48,9 +48,14 @@ export const verifyHMAC = (data, hash, secret = process.env.HMAC_SECRET) => {
  * @returns {Promise<string>} - Hashed password
  */
 export const hashPassword = async (password) => {
-  const bcrypt = await import('bcryptjs');
-  const salt = await bcrypt.genSalt(12);
-  return bcrypt.hash(password, salt);
+  try {
+    const bcrypt = await import('bcryptjs');
+    const salt = await bcrypt.default.genSalt(12);
+    return bcrypt.default.hash(password, salt);
+  } catch (error) {
+    console.error('Error hashing password:', error);
+    throw new Error('Password hashing failed');
+  }
 };
 
 /**
@@ -60,8 +65,13 @@ export const hashPassword = async (password) => {
  * @returns {Promise<boolean>} - Whether password matches
  */
 export const comparePassword = async (password, hash) => {
-  const bcrypt = await import('bcryptjs');
-  return bcrypt.compare(password, hash);
+  try {
+    const bcrypt = await import('bcryptjs');
+    return bcrypt.default.compare(password, hash);
+  } catch (error) {
+    console.error('Error comparing password:', error);
+    throw new Error('Password comparison failed');
+  }
 };
 
 /**
