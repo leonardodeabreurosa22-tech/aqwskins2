@@ -65,7 +65,6 @@ const LootBoxDetail = () => {
     } finally {
       setOpening(false);
     }
-  };}
   };
 
   if (loading) return <Loading fullScreen />;
