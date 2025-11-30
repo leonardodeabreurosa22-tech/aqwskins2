@@ -166,7 +166,7 @@ const Home = () => {
                       <p className="text-gray-400 mb-4">{box.description}</p>
                       <div className="flex items-center justify-between">
                         <span className="text-2xl font-bold text-primary-400">
-                          ${box.price.toFixed(2)}
+                          ${parseFloat(box.price || 0).toFixed(2)}
                         </span>
                         <span className="text-sm text-gray-500">
                           {box.openCount || 0} opened

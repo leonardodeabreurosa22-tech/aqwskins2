@@ -124,7 +124,7 @@ const LootBoxOpeningModal = ({ isOpen, onClose, lootbox, onOpen, opening }) => {
                 <h2 className="text-3xl font-bold mb-2">{lootbox?.name}</h2>
                 <p className="text-gray-400 mb-6">{lootbox?.description}</p>
                 <div className="text-2xl font-bold text-primary-400 mb-8">
-                  ${lootbox?.price.toFixed(2)}
+                  ${parseFloat(lootbox?.price || 0).toFixed(2)}
                 </div>
               </div>
 

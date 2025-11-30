@@ -87,7 +87,7 @@ const LootBoxDetail = () => {
                 <div className="bg-gray-900 rounded-lg p-4 mb-6">
                   <div className="text-sm text-gray-400 mb-1">{t('lootbox.price')}</div>
                   <div className="text-3xl font-bold text-primary-400">
-                    ${lootbox.price.toFixed(2)}
+                    ${parseFloat(lootbox.price || 0).toFixed(2)}
                   </div>
                 </div>
                 <Button
