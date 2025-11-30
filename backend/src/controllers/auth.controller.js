@@ -62,60 +62,65 @@ class AuthController {
    * Login user
    */
   async login(req, res) {
-    const { email, password } = req.body;
+    try {
+      const { email, password } = req.body;
 
-    // Get user
-    const result = await pool.query(
-      'SELECT * FROM users WHERE email = $1',
-      [email]
-    );
+      // Get user
+      const result = await pool.query(
+        'SELECT * FROM users WHERE email = $1',
+        [email]
+      );
 
-    if (result.rows.length === 0) {
-      throw new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS');
-    }
-
-    const user = result.rows[0];
-
-    // Verify password
-    const { comparePassword } = await import('../utils/crypto.js');
-    const isValid = await comparePassword(password, user.password_hash);
-
-    if (!isValid) {
-      throw new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS');
-    }
-
-    // Check if account is active
-    if (user.status !== 'active') {
-      throw new AppError('Account is suspended', 403, 'ACCOUNT_SUSPENDED');
-    }
-
-    // Generate token
-    const { generateToken, generateRefreshToken } = await import('../utils/crypto.js');
-    const token = generateToken({ id: user.id, email: user.email, role: user.role });
-    const refreshToken = generateRefreshToken({ id: user.id });
-
-    // Update last login
-    await pool.query(
-      'UPDATE users SET last_login_at = NOW() WHERE id = $1',
-      [user.id]
-    );
-
-    logger.info('User logged in', { userId: user.id, username: user.username });
-
-    res.json({
-      success: true,
-      data: {
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-          balance: user.balance
-        },
-        token,
-        refreshToken
+      if (result.rows.length === 0) {
+        throw new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS');
       }
-    });
+
+      const user = result.rows[0];
+
+      // Verify password
+      const { comparePassword } = await import('../utils/crypto.js');
+      const isValid = await comparePassword(password, user.password_hash);
+
+      if (!isValid) {
+        throw new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS');
+      }
+
+      // Check if account is active
+      if (user.status !== 'active') {
+        throw new AppError('Account is suspended', 403, 'ACCOUNT_SUSPENDED');
+      }
+
+      // Generate token
+      const { generateToken, generateRefreshToken } = await import('../utils/crypto.js');
+      const token = generateToken({ id: user.id, email: user.email, role: user.role });
+      const refreshToken = generateRefreshToken({ id: user.id });
+
+      // Update last login
+      await pool.query(
+        'UPDATE users SET last_login_at = NOW() WHERE id = $1',
+        [user.id]
+      );
+
+      logger.info('User logged in', { userId: user.id, username: user.username });
+
+      res.json({
+        success: true,
+        data: {
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            balance: user.balance
+          },
+          token,
+          refreshToken
+        }
+      });
+    } catch (error) {
+      logger.error('Login error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -135,44 +140,54 @@ class AuthController {
    * Refresh access token
    */
   async refreshToken(req, res) {
-    const { refreshToken } = req.body;
+    try {
+      const { refreshToken } = req.body;
 
-    if (!refreshToken) {
-      throw new AppError('Refresh token required', 400, 'TOKEN_REQUIRED');
-    }
-
-    const jwt = await import('jsonwebtoken');
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-
-    // Generate new access token
-    const { generateToken } = await import('../utils/crypto.js');
-    const newToken = generateToken({ id: decoded.id });
-
-    res.json({
-      success: true,
-      data: {
-        token: newToken
+      if (!refreshToken) {
+        throw new AppError('Refresh token required', 400, 'TOKEN_REQUIRED');
       }
-    });
+
+      const jwt = await import('jsonwebtoken');
+      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+
+      // Generate new access token
+      const { generateToken } = await import('../utils/crypto.js');
+      const newToken = generateToken({ id: decoded.id });
+
+      res.json({
+        success: true,
+        data: {
+          token: newToken
+        }
+      });
+    } catch (error) {
+      logger.error('Refresh token error:', error);
+      throw error;
+    }
   }
 
   /**
    * Get current user
    */
   async getCurrentUser(req, res) {
-    const result = await pool.query(
-      `SELECT id, username, email, role, balance, level, experience, 
-              preferred_language, preferred_currency, created_at
-       FROM users WHERE id = $1`,
-      [req.user.id]
-    );
+    try {
+      const result = await pool.query(
+        `SELECT id, username, email, role, balance, level, experience, 
+                preferred_language, preferred_currency, created_at
+         FROM users WHERE id = $1`,
+        [req.user.id]
+      );
 
-    res.json({
-      success: true,
-      data: {
-        user: result.rows[0]
-      }
-    });
+      res.json({
+        success: true,
+        data: {
+          user: result.rows[0]
+        }
+      });
+    } catch (error) {
+      logger.error('Get current user error:', error);
+      throw error;
+    }
   }
 
   /**
