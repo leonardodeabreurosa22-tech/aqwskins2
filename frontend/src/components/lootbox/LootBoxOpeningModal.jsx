@@ -207,3 +207,10 @@ const LootBoxOpeningModal = ({ isOpen, onClose, lootbox, onOpen, opening }) => {
               </div>
             </motion.div>
           )}
+        </AnimatePresence>
+      </div>
+    </Modal>
+  );
+};
+
+export default LootBoxOpeningModal;
