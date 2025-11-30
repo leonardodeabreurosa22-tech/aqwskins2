@@ -21,11 +21,15 @@ router.get('/', asyncHandler(lootboxController.getAllLootboxes));
 router.get('/live-drops', asyncHandler(lootboxController.getLiveDrops));
 
 /**
- * @route   GET /api/v1/lootboxes/:id
- * @desc    Get lootbox details
- * @access  Public
+ * @route   GET /api/v1/lootboxes/openings/history
+ * @desc    Get user's opening history
+ * @access  Private
  */
-router.get('/:id', asyncHandler(lootboxController.getLootboxDetails));
+router.get(
+  '/openings/history',
+  authenticate,
+  asyncHandler(lootboxController.getOpeningHistory)
+);
 
 /**
  * @route   GET /api/v1/lootboxes/:id/items
@@ -33,6 +37,13 @@ router.get('/:id', asyncHandler(lootboxController.getLootboxDetails));
  * @access  Public
  */
 router.get('/:id/items', asyncHandler(lootboxController.getLootboxItems));
+
+/**
+ * @route   GET /api/v1/lootboxes/:id
+ * @desc    Get lootbox details
+ * @access  Public
+ */
+router.get('/:id', asyncHandler(lootboxController.getLootboxDetails));
 
 /**
  * @route   POST /api/v1/lootboxes/:id/open
@@ -44,17 +55,6 @@ router.post(
   authenticate,
   lootboxRateLimiter,
   asyncHandler(lootboxController.openLootbox)
-);
-
-/**
- * @route   GET /api/v1/lootboxes/openings/history
- * @desc    Get user's opening history
- * @access  Private
- */
-router.get(
-  '/openings/history',
-  authenticate,
-  asyncHandler(lootboxController.getOpeningHistory)
 );
 
 export default router;
