@@ -73,7 +73,7 @@ function App() {
 
             {/* Admin Routes */}
             <Route element={<AdminRoute />}>
-              <Route path="/admin/*" element={<AdminDashboard />} />
+              <Route path="/admin" element={<AdminDashboard />} />
             </Route>
 
             {/* 404 */}
