@@ -133,7 +133,15 @@ const LootBoxDetail = () => {
 
   const extendedItems = isSpinning || showResult 
     ? [...items, ...items, ...items, wonItem, ...items, ...items]
-    : items.slice(0, 7);
+    : items;
+
+  // Calculate initial offset to center the middle item
+  const staticOffset = (() => {
+    if (isSpinning || showResult || items.length === 0) return 0;
+    const middleIndex = Math.floor(items.length / 2);
+    const itemWidth = 160 + 16; // w-40 (160px) + gap-4 (16px)
+    return -middleIndex * itemWidth;
+  })();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-blue-900/20 to-gray-900">
@@ -198,13 +206,11 @@ const LootBoxDetail = () => {
 
           <div ref={containerRef} className="overflow-hidden relative h-48">
             <motion.div
-              className="flex gap-4 absolute"
+              className="flex gap-4 absolute left-1/2"
               animate={controls}
-              initial={{ x: 0 }}
+              initial={{ x: staticOffset }}
               style={{ 
-                justifyContent: isSpinning || showResult ? 'flex-start' : 'center',
-                left: isSpinning || showResult ? 0 : '50%',
-                transform: isSpinning || showResult ? 'none' : 'translateX(-50%)'
+                x: isSpinning || showResult ? undefined : staticOffset
               }}
             >
               {extendedItems.map((item, idx) => (
@@ -272,7 +278,7 @@ const LootBoxDetail = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleOpen}
-              disabled={isSpinning || !isAuthenticated || !user || (user?.balance || 0) < (lootbox?.price || 0)}
+              disabled={isSpinning || !isAuthenticated || !user || parseFloat(user?.balance || 0) < parseFloat(lootbox?.price || 0)}
               className="px-16 py-5 text-xl font-bold rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-2xl shadow-blue-500/50 transition-all"
             >
               {isSpinning ? 'Opening...' : `Open for $${parseFloat(lootbox.price || 0).toFixed(2)}`}
