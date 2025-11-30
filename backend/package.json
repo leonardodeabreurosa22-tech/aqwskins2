@@ -1,6 +1,6 @@
 {
   "name": "aqw-skins-backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Backend API for AQW Skins Loot Box System",
   "main": "src/server.js",
   "type": "module",
