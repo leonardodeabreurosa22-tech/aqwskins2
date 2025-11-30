@@ -50,6 +50,13 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Handle network errors without infinite retry
+    if (!error.response && !originalRequest._retry) {
+      console.error('Network error:', error.message);
+      toast.error('Unable to connect to server. Please check your connection.');
+      return Promise.reject(error);
+    }
+
     // Handle 401 Unauthorized (token expired)
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -79,9 +86,9 @@ api.interceptors.response.use(
       toast.error("You do not have permission to perform this action");
     }
 
-    // Handle 404 Not Found
+    // Handle 404 Not Found - Don't show toast for all 404s
     if (error.response?.status === 404) {
-      toast.error("Resource not found");
+      console.warn('Resource not found:', originalRequest.url);
     }
 
     // Handle 429 Too Many Requests
@@ -89,14 +96,14 @@ api.interceptors.response.use(
       toast.error("Too many requests. Please try again later.");
     }
 
-    // Handle 500 Server Error
+    // Handle 500 Server Error - Don't spam toasts
     if (error.response?.status >= 500) {
-      toast.error("Server error. Please try again later.");
-    }
-
-    // Handle network errors
-    if (!error.response) {
-      toast.error("Network error. Please check your connection.");
+      console.error('Server error:', error.response?.status, originalRequest.url);
+      // Only show toast if not already retrying
+      if (!originalRequest._errorToastShown) {
+        originalRequest._errorToastShown = true;
+        toast.error("Server error. Please try again later.");
+      }
     }
 
     return Promise.reject(error);
