@@ -17,10 +17,11 @@ const LootBoxes = () => {
 
   const loadLootBoxes = async () => {
     try {
-      const data = await lootboxService.getAll();
-      setLootboxes(data);
+      const response = await lootboxService.getAll();
+      setLootboxes(response?.data?.lootboxes || []);
     } catch (error) {
       console.error('Failed to load loot boxes:', error);
+      setLootboxes([]);
     } finally {
       setLoading(false);
     }

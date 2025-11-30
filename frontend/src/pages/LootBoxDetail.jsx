@@ -27,12 +27,12 @@ const LootBoxDetail = () => {
 
   const loadLootBox = async () => {
     try {
-      const [boxData, itemsData] = await Promise.all([
+      const [boxResponse, itemsResponse] = await Promise.all([
         lootboxService.getById(id),
         lootboxService.getItems(id),
       ]);
-      setLootbox(boxData);
-      setItems(itemsData);
+      setLootbox(boxResponse?.data || null);
+      setItems(itemsResponse?.data?.items || []);
     } catch (error) {
       console.error('Failed to load loot box:', error);
       toast.error('Failed to load loot box');
