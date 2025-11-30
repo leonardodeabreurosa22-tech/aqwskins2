@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { motion, useAnimation } from 'framer-motion';
 import { FiChevronLeft, FiVolume2, FiVolumeX } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
+import confetti from 'canvas-confetti';
 import lootboxService from '@services/lootboxService';
 import useAuthStore from '@store/authStore';
 import Loading from '@components/common/Loading';
-import LootBoxOpeningModal from '@components/lootbox/LootBoxOpeningModal';
+import Button from '@components/common/Button';
 
 const LootBoxDetail = () => {
   const { id } = useParams();
@@ -17,9 +18,12 @@ const LootBoxDetail = () => {
   const [lootbox, setLootbox] = useState(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [opening, setOpening] = useState(false);
-  const [showOpeningModal, setShowOpeningModal] = useState(false);
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [wonItem, setWonItem] = useState(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [showResult, setShowResult] = useState(false);
+  const controls = useAnimation();
+  const containerRef = useRef(null);
 
   useEffect(() => {
     loadLootBox();
@@ -31,7 +35,7 @@ const LootBoxDetail = () => {
         lootboxService.getById(id),
         lootboxService.getItems(id),
       ]);
-      setLootbox(boxResponse?.data || null);
+      setLootbox(boxResponse?.data?.lootbox || boxResponse?.data || null);
       setItems(itemsResponse?.data?.items || []);
     } catch (error) {
       console.error('Failed to load loot box:', error);
@@ -41,7 +45,7 @@ const LootBoxDetail = () => {
     }
   };
 
-  const handleOpenClick = () => {
+  const handleOpen = async () => {
     if (!isAuthenticated) {
       toast.error('Please login to open cases');
       return;
@@ -52,19 +56,63 @@ const LootBoxDetail = () => {
       return;
     }
 
-    setShowOpeningModal(true);
-  };
-
-  const handleOpen = async () => {
-    setOpening(true);
+    setIsSpinning(true);
+    setShowResult(false);
+    
     try {
       const result = await lootboxService.open(id);
-      return result;
+      const item = result?.data?.item || result?.item;
+      setWonItem(item);
+      await startAnimation(item);
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to open case');
-      throw error;
-    } finally {
-      setOpening(false);
+      toast.error(error.response?.data?.error?.message || 'Failed to open case');
+      setIsSpinning(false);
+    }
+  };
+
+  const startAnimation = async (item) => {
+    const itemWidth = 150;
+    const extendedItems = [...items, ...items, ...items, item, ...items, ...items];
+    const wonItemIndex = items.length * 3;
+    const containerWidth = containerRef.current?.offsetWidth || 600;
+    const finalOffset = -(wonItemIndex * itemWidth - containerWidth / 2 + itemWidth / 2);
+
+    // Initial fast spin
+    await controls.start({
+      x: -itemWidth * 5,
+      transition: { duration: 0.5, ease: 'linear' }
+    });
+
+    // Main spin to won item
+    await controls.start({
+      x: finalOffset,
+      transition: { duration: 5, ease: [0.25, 0.46, 0.45, 0.94] }
+    });
+
+    // Small bounce
+    await controls.start({
+      x: finalOffset + 20,
+      transition: { duration: 0.1 }
+    });
+
+    await controls.start({
+      x: finalOffset,
+      transition: { duration: 0.2, ease: 'easeOut' }
+    });
+
+    setIsSpinning(false);
+    setShowResult(true);
+
+    // Confetti for rare items
+    if (['epic', 'legendary', 'mythic'].includes(item?.rarity?.toLowerCase())) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: item.rarity === 'mythic' ? ['#eb4b4b'] : 
+                item.rarity === 'legendary' ? ['#d32ce6'] : 
+                ['#8847ff'],
+      });
     }
   };
 
@@ -83,8 +131,13 @@ const LootBoxDetail = () => {
   if (loading) return <Loading fullScreen />;
   if (!lootbox) return <div>Case not found</div>;
 
+  const extendedItems = isSpinning || showResult 
+    ? [...items, ...items, ...items, wonItem, ...items, ...items]
+    : items.slice(0, 7);
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-blue-900/20 to-gray-900">{/* Header */}
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-blue-900/20 to-gray-900">
+      {/* Header */}
       <div className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container-custom py-4">
           <div className="flex items-center justify-between">
@@ -125,48 +178,114 @@ const LootBoxDetail = () => {
             transition={{ delay: 0.1 }}
             className="text-xl text-blue-400 font-semibold"
           >
-            R${parseFloat(lootbox.price || 0).toFixed(2)}
+            ${parseFloat(lootbox.price || 0).toFixed(2)}
           </motion.p>
         </div>
 
-        {/* Preview Roller */}
+        {/* Roller Section */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="mb-12 bg-gradient-to-r from-blue-900/30 via-purple-900/30 to-blue-900/30 rounded-2xl p-6 border border-blue-500/30"
+          className="mb-12 bg-gradient-to-r from-blue-900/30 via-purple-900/30 to-blue-900/30 rounded-2xl p-6 border border-blue-500/30 relative"
         >
-          <div className="overflow-hidden">
-            <div className="flex gap-4 justify-center">
-              {items.slice(0, 7).map((item, idx) => (
+          {/* Center indicator */}
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-20 w-1 h-full pointer-events-none">
+            <div className="w-full h-full bg-gradient-to-b from-transparent via-yellow-500 to-transparent opacity-80" />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <div className="w-4 h-4 bg-yellow-500 rounded-full shadow-lg shadow-yellow-500/50" />
+            </div>
+          </div>
+
+          <div ref={containerRef} className="overflow-hidden relative h-48">
+            <motion.div
+              className="flex gap-4 absolute"
+              animate={controls}
+              initial={{ x: 0 }}
+              style={{ 
+                justifyContent: isSpinning || showResult ? 'flex-start' : 'center',
+                left: isSpinning || showResult ? 0 : '50%',
+                transform: isSpinning || showResult ? 'none' : 'translateX(-50%)'
+              }}
+            >
+              {extendedItems.map((item, idx) => (
                 <div
-                  key={idx}
-                  className="flex-shrink-0 w-40 h-40 bg-gray-800/50 rounded-xl p-3 border-2 transition-all hover:scale-105"
-                  style={{ borderColor: getRarityColor(item.rarity) }}
+                  key={`${item?.id}-${idx}`}
+                  className="flex-shrink-0 w-40 bg-gray-800/50 rounded-xl p-3 border-2 transition-all"
+                  style={{ borderColor: getRarityColor(item?.rarity) }}
                 >
+                  <img
+                    src={item?.image_url}
+                    alt={item?.name}
+        {/* Case Contents */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-6 text-center">Case contents</h2>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+            {items.map((item, idx) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.05 }}
+                className="bg-gray-800/50 rounded-xl p-4 border-2 hover:scale-105 transition-all cursor-pointer group"
+                style={{ borderColor: getRarityColor(item.rarity) }}
+              >
+                <div className="relative mb-3">
+                  <div className="absolute top-2 left-2 px-2 py-1 rounded text-xs font-bold bg-black/50">
+                    {parseFloat(item.drop_rate || 0).toFixed(2)}%
+                  </div>
                   <img
                     src={item.image_url}
                     alt={item.name}
-                    className="w-full h-24 object-contain mb-2"
+                    className="w-full h-32 object-contain group-hover:scale-110 transition-transform"
                   />
-                  <p className="text-xs text-center truncate text-gray-300">{item.name}</p>
                 </div>
-              ))}
-            </div>
+                
+                <div className="space-y-1">
+                  <div
+                    className="text-xs font-bold px-2 py-1 rounded text-center uppercase"
+                    style={{ 
+                      backgroundColor: getRarityColor(item.rarity) + '20',
+                      color: getRarityColor(item.rarity)
+                    }}
+                  >
+                    {item.rarity}
+                  </div>
+                  
+                  <p className="text-sm text-center text-gray-300 line-clamp-2 min-h-[2.5rem]">
+                    {item.name}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
           </div>
-        </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default LootBoxDetail;
+                View Inventory
+              </Button>
+            </div>
+          </motion.div>
+        )}
 
         {/* Open Button */}
-        <div className="flex justify-center mb-12">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleOpenClick}
-            disabled={!isAuthenticated || !user || (user?.balance || 0) < (lootbox?.price || 0)}
-            className="px-16 py-5 text-xl font-bold rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-2xl shadow-blue-500/50 transition-all"
-          >
-            Open for R${parseFloat(lootbox.price || 0).toFixed(2)}
-          </motion.button>
-        </div>
+        {!showResult && (
+          <div className="flex justify-center mb-12">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleOpen}
+              disabled={isSpinning || !isAuthenticated || !user || (user?.balance || 0) < (lootbox?.price || 0)}
+              className="px-16 py-5 text-xl font-bold rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-2xl shadow-blue-500/50 transition-all"
+            >
+              {isSpinning ? 'Opening...' : `Open for $${parseFloat(lootbox.price || 0).toFixed(2)}`}
+            </motion.button>
+          </div>
+        )}
 
         {/* Case Contents */}
         <div className="mb-8">
