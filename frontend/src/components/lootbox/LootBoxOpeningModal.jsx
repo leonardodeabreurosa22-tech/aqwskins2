@@ -32,11 +32,17 @@ const LootBoxOpeningModal = ({ isOpen, onClose, lootbox, onOpen, opening }) => {
   }, [lootbox]);
 
   const handleOpen = async () => {
-    setStage('spinning');
-    
     try {
       const result = await onOpen();
-      setWonItem(result?.data?.item || result?.item);
+      const item = result?.data?.item || result?.item;
+      
+      if (item) {
+        setWonItem(item);
+        setStage('spinning');
+      } else {
+        console.error('No item returned from opening');
+        setStage('ready');
+      }
     } catch (error) {
       setStage('ready');
       console.error('Error opening lootbox:', error);
