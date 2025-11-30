@@ -38,6 +38,7 @@ import { initializeCronJobs } from "./utils/cronJobs.js";
 // Load environment variables
 dotenv.config();
 
+// Force deploy test - trigger auto-deploy
 const app = express();
 const httpServer = createServer(app);
 
