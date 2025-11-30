@@ -187,101 +187,17 @@ const LootBoxOpeningModal = ({ isOpen, onClose, lootbox, onOpen, opening }) => {
 
               <div className="flex gap-4 justify-center pt-4">
                 <Button variant="outline" onClick={onClose}>
-                  {t('lootbox.tryAgain')}
+                  Close
                 </Button>
                 <Button 
                   variant="primary" 
-                  onClick={() => window.location.href = '/inventory'}
+                  onClick={() => {
+                    setStage('ready');
+                    setWonItem(null);
+                  }}
                 >
-                  {t('lootbox.goToInventory')}
+                  Open Another
                 </Button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </Modal>
-  );
-};
-
-export default LootBoxOpeningModal;
-          {/* Result Stage */}
-          {stage === 'result' && wonItem && (
-            <motion.div
-              key="result"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex items-center justify-center min-h-screen p-8"
-            >
-              <div className="text-center space-y-8 max-w-lg">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', duration: 0.6 }}
-                >
-                  <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                    YOU WON!
-                  </h2>
-                </motion.div>
-
-                <motion.div
-                  initial={{ y: 50, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className={`relative p-8 rounded-3xl bg-gradient-to-br ${getRarityGradient(wonItem.rarity)} shadow-2xl`}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl" />
-                  
-                  <div className="relative">
-                    {wonItem.image_url && (
-                      <motion.img
-                        src={wonItem.image_url}
-                        alt={wonItem.name}
-                        className="w-64 h-64 object-contain mx-auto mb-6"
-                        animate={{ 
-                          rotate: [0, -5, 5, 0],
-                          scale: [1, 1.05, 1]
-                        }}
-                        transition={{ 
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      />
-                    )}
-                    
-                    <h3 className="text-3xl font-bold text-white mb-2">{wonItem.name}</h3>
-                    
-                    <div className={`inline-block px-4 py-2 rounded-full text-sm font-bold uppercase mb-4 bg-gradient-to-r ${getRarityGradient(wonItem.rarity)}`}>
-                      {wonItem.rarity}
-                    </div>
-                    
-                    <div className="text-4xl font-bold text-yellow-400">
-                      ${parseFloat(wonItem.value || 0).toFixed(2)}
-                    </div>
-                  </div>
-                </motion.div>
-
-                <div className="flex gap-4 justify-center">
-                  <Button
-                    variant="outline"
-                    onClick={onClose}
-                    className="min-w-[150px]"
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      setStage('ready');
-                      setWonItem(null);
-                    }}
-                    className="min-w-[150px]"
-                  >
-                    Open Another
-                  </Button>
-                </div>
               </div>
             </motion.div>
           )}
