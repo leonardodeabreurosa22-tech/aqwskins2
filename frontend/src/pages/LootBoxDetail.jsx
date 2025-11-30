@@ -2,13 +2,12 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, useAnimation } from 'framer-motion';
-import { FiChevronLeft, FiVolume2, FiVolumeX } from 'react-icons/fi';
+import { FiChevronLeft, FiVolume2, FiVolumeX, FiRefreshCw, FiDollarSign } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 import confetti from 'canvas-confetti';
 import lootboxService from '@services/lootboxService';
 import useAuthStore from '@store/authStore';
 import Loading from '@components/common/Loading';
-import Button from '@components/common/Button';
 
 const LootBoxDetail = () => {
   const { id } = useParams();
@@ -22,6 +21,7 @@ const LootBoxDetail = () => {
   const [wonItem, setWonItem] = useState(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [showResult, setShowResult] = useState(false);
+  const [currentOffset, setCurrentOffset] = useState(0);
   const controls = useAnimation();
   const containerRef = useRef(null);
 
@@ -36,7 +36,16 @@ const LootBoxDetail = () => {
         lootboxService.getItems(id),
       ]);
       setLootbox(boxResponse?.data?.lootbox || boxResponse?.data || null);
-      setItems(itemsResponse?.data?.items || []);
+      
+      // Sort items by rarity (rarest first)
+      const rarityOrder = { mythic: 0, legendary: 1, epic: 2, rare: 3, uncommon: 4, common: 5 };
+      const sortedItems = (itemsResponse?.data?.items || []).sort((a, b) => {
+        const orderA = rarityOrder[a.rarity?.toLowerCase()] ?? 999;
+        const orderB = rarityOrder[b.rarity?.toLowerCase()] ?? 999;
+        return orderA - orderB;
+      });
+      
+      setItems(sortedItems);
     } catch (error) {
       console.error('Failed to load loot box:', error);
       toast.error('Failed to load loot box');
@@ -53,14 +62,6 @@ const LootBoxDetail = () => {
 
     const userBalance = parseFloat(user?.balance || 0);
     const boxPrice = parseFloat(lootbox?.price || 0);
-    
-    console.log('Balance check:', { 
-      userBalance, 
-      boxPrice, 
-      hasEnough: userBalance >= boxPrice,
-      user: user,
-      isAuthenticated 
-    });
 
     if (!user || userBalance < boxPrice) {
       toast.error(`Insufficient balance. You have $${userBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} but need $${boxPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
@@ -97,48 +98,86 @@ const LootBoxDetail = () => {
   };
 
   const startAnimation = async (item) => {
-    const itemWidth = 150;
+    const itemWidth = 180;
+    const containerWidth = containerRef.current?.offsetWidth || 600;
     const extendedItems = [...items, ...items, ...items, item, ...items, ...items];
     const wonItemIndex = items.length * 3;
-    const containerWidth = containerRef.current?.offsetWidth || 600;
+    
     const finalOffset = -(wonItemIndex * itemWidth - containerWidth / 2 + itemWidth / 2);
 
-    // Initial fast spin
-    await controls.start({
-      x: -itemWidth * 5,
-      transition: { duration: 0.5, ease: 'linear' }
-    });
-
-    // Main spin to won item
     await controls.start({
       x: finalOffset,
-      transition: { duration: 5, ease: [0.25, 0.46, 0.45, 0.94] }
+      transition: { 
+        duration: 7,
+        ease: [0.22, 1, 0.36, 1]
+      }
     });
 
-    // Small bounce
     await controls.start({
-      x: finalOffset + 20,
-      transition: { duration: 0.1 }
+      x: finalOffset + 15,
+      transition: { duration: 0.15, ease: 'easeOut' }
     });
 
     await controls.start({
       x: finalOffset,
-      transition: { duration: 0.2, ease: 'easeOut' }
+      transition: { duration: 0.25, ease: 'easeInOut' }
     });
 
+    setCurrentOffset(finalOffset);
     setIsSpinning(false);
     setShowResult(true);
 
-    // Confetti for rare items
     if (['epic', 'legendary', 'mythic'].includes(item?.rarity?.toLowerCase())) {
+      const colors = item.rarity === 'mythic' ? ['#eb4b4b', '#ff6b6b'] : 
+                     item.rarity === 'legendary' ? ['#d32ce6', '#ff48ff'] : 
+                     ['#8847ff', '#a66fff'];
+      
       confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: item.rarity === 'mythic' ? ['#eb4b4b'] : 
-                item.rarity === 'legendary' ? ['#d32ce6'] : 
-                ['#8847ff'],
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.5 },
+        colors,
+        ticks: 200,
+        gravity: 0.8,
       });
+      
+      setTimeout(() => {
+        confetti({
+          particleCount: 100,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors,
+        });
+        confetti({
+          particleCount: 100,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors,
+        });
+      }, 250);
+    }
+  };
+
+  const handleOpenAgain = () => {
+    setShowResult(false);
+    setWonItem(null);
+    handleOpen();
+  };
+
+  const handleSellItem = async () => {
+    if (!wonItem) return;
+    
+    try {
+      // TODO: Implement sell functionality
+      const sellValue = parseFloat(wonItem.value || 0);
+      updateUser({ balance: parseFloat(user.balance) + sellValue });
+      toast.success(`Item sold for $${sellValue.toFixed(2)}`);
+      setShowResult(false);
+      setWonItem(null);
+    } catch (error) {
+      toast.error('Failed to sell item');
     }
   };
 
@@ -161,14 +200,6 @@ const LootBoxDetail = () => {
     ? [...items, ...items, ...items, wonItem, ...items, ...items]
     : items;
 
-  // Calculate initial offset to center the middle item
-  const staticOffset = (() => {
-    if (isSpinning || showResult || items.length === 0) return 0;
-    const middleIndex = Math.floor(items.length / 2);
-    const itemWidth = 160 + 16; // w-40 (160px) + gap-4 (16px)
-    return -middleIndex * itemWidth;
-  })();
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-blue-900/20 to-gray-900">
       {/* Header */}
@@ -183,14 +214,12 @@ const LootBoxDetail = () => {
               <span>Back to cases</span>
             </button>
             
-            <div className="flex items-center gap-6">
-              <button
-                onClick={() => setSoundEnabled(!soundEnabled)}
-                className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition"
-              >
-                {soundEnabled ? <FiVolume2 className="w-5 h-5" /> : <FiVolumeX className="w-5 h-5" />}
-              </button>
-            </div>
+            <button
+              onClick={() => setSoundEnabled(!soundEnabled)}
+              className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition"
+            >
+              {soundEnabled ? <FiVolume2 className="w-5 h-5" /> : <FiVolumeX className="w-5 h-5" />}
+            </button>
           </div>
         </div>
       </div>
@@ -198,7 +227,7 @@ const LootBoxDetail = () => {
       {/* Main Content */}
       <div className="container-custom py-8">
         {/* Case Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -210,47 +239,76 @@ const LootBoxDetail = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1 }}
-            className="text-xl text-blue-400 font-semibold"
+            className="text-2xl text-blue-400 font-semibold"
           >
             ${parseFloat(lootbox.price || 0).toFixed(2)}
           </motion.p>
+        </div>
+
+        {/* Top Preview Row */}
+        <div className="mb-8 overflow-hidden">
+          <div className="flex gap-4 justify-center px-4">
+            {items.slice(0, 7).map((item, idx) => (
+              <div
+                key={item.id}
+                className="flex-shrink-0 w-32 sm:w-36 md:w-40"
+              >
+                <div 
+                  className="bg-gray-800/50 rounded-xl p-3 border-2 transition-all hover:scale-105"
+                  style={{ borderColor: getRarityColor(item.rarity) }}
+                >
+                  <img
+                    src={item.image_url}
+                    alt={item.name}
+                    className="w-full h-24 object-contain mb-2"
+                  />
+                  <p className="text-xs text-center truncate text-gray-300">{item.name}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Roller Section */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="mb-12 bg-gradient-to-r from-blue-900/30 via-purple-900/30 to-blue-900/30 rounded-2xl p-6 border border-blue-500/30 relative"
+          className="mb-8 bg-gradient-to-r from-blue-900/30 via-purple-900/30 to-blue-900/30 rounded-2xl p-6 border border-blue-500/30 relative overflow-hidden"
         >
           {/* Center indicator */}
           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-20 w-1 h-full pointer-events-none">
-            <div className="w-full h-full bg-gradient-to-b from-transparent via-yellow-500 to-transparent opacity-80" />
+            <div className="w-full h-full bg-gradient-to-b from-transparent via-yellow-400 to-transparent opacity-90" />
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <div className="w-4 h-4 bg-yellow-500 rounded-full shadow-lg shadow-yellow-500/50" />
+              <div className="w-5 h-5 bg-yellow-400 rounded-full shadow-lg shadow-yellow-400/50 animate-pulse" />
             </div>
           </div>
 
-          <div ref={containerRef} className="overflow-hidden relative h-48">
+          <div ref={containerRef} className="overflow-hidden relative h-56">
             <motion.div
-              className="flex gap-4 absolute left-1/2"
+              className="flex gap-6 absolute"
               animate={controls}
-              initial={{ x: staticOffset }}
+              initial={{ x: currentOffset }}
               style={{ 
-                x: isSpinning || showResult ? undefined : staticOffset
+                left: '50%',
+                x: currentOffset
               }}
             >
               {extendedItems.map((item, idx) => (
                 <div
                   key={`${item?.id}-${idx}`}
-                  className="flex-shrink-0 w-40 bg-gray-800/50 rounded-xl p-3 border-2 transition-all"
-                  style={{ borderColor: getRarityColor(item?.rarity) }}
+                  className="flex-shrink-0 w-44"
                 >
-                  <img
-                    src={item?.image_url}
-                    alt={item?.name}
-                    className="w-full h-24 object-contain mb-2"
-                  />
-                  <p className="text-xs text-center truncate text-gray-300">{item?.name}</p>
+                  <div
+                    className="bg-gray-800/70 rounded-xl p-4 border-2 transition-all h-full flex flex-col"
+                    style={{ borderColor: getRarityColor(item?.rarity) }}
+                  >
+                    <img
+                      src={item?.image_url}
+                      alt={item?.name}
+                      className="w-full h-32 object-contain mb-3"
+                    />
+                    <p className="text-sm text-center truncate text-gray-200 font-medium">{item?.name}</p>
+                  </div>
                 </div>
               ))}
             </motion.div>
@@ -262,37 +320,32 @@ const LootBoxDetail = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="mb-8 text-center"
+            className="mb-8"
           >
-            <h2 className="text-3xl font-bold mb-4 text-yellow-400">YOU WON!</h2>
-            <div 
-              className="inline-block bg-gray-800/50 rounded-xl p-6 border-4"
-              style={{ borderColor: getRarityColor(wonItem.rarity) }}
-            >
-              <img
-                src={wonItem.image_url}
-                alt={wonItem.name}
-                className="w-48 h-48 object-contain mx-auto mb-4"
-              />
-              <div
-                className="text-sm font-bold px-3 py-1 rounded mb-2 uppercase inline-block"
-                style={{ 
-                  backgroundColor: getRarityColor(wonItem.rarity) + '20',
-                  color: getRarityColor(wonItem.rarity)
-                }}
+            <h2 className="text-4xl font-bold mb-6 text-center bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+              YOU WON!
+            </h2>
+            <div className="flex justify-center gap-4">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleOpenAgain}
+                disabled={!isAuthenticated || parseFloat(user?.balance || 0) < parseFloat(lootbox?.price || 0)}
+                className="flex items-center gap-2 px-8 py-4 text-lg font-bold rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl transition-all"
               >
-                {wonItem.rarity}
-              </div>
-              <p className="text-lg font-semibold text-white mb-4">{wonItem.name}</p>
-              <p className="text-2xl font-bold text-green-400">${parseFloat(wonItem.value || 0).toFixed(2)}</p>
-            </div>
-            <div className="mt-6">
-              <Button
-                onClick={() => navigate('/inventory')}
-                className="px-8 py-3 bg-blue-600 hover:bg-blue-700"
+                <FiRefreshCw className="w-5 h-5" />
+                Open Again ${parseFloat(lootbox.price || 0).toFixed(2)}
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSellItem}
+                className="flex items-center gap-2 px-8 py-4 text-lg font-bold rounded-xl bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-xl transition-all"
               >
-                View Inventory
-              </Button>
+                <FiDollarSign className="w-5 h-5" />
+                Sell for ${parseFloat(wonItem.value || 0).toFixed(2)}
+              </motion.button>
             </div>
           </motion.div>
         )}
@@ -305,7 +358,7 @@ const LootBoxDetail = () => {
               whileTap={{ scale: 0.95 }}
               onClick={handleOpen}
               disabled={isSpinning || !isAuthenticated || !user || parseFloat(user?.balance || 0) < parseFloat(lootbox?.price || 0)}
-              className="px-16 py-5 text-xl font-bold rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-2xl shadow-blue-500/50 transition-all"
+              className="px-20 py-6 text-2xl font-bold rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-2xl shadow-blue-500/50 transition-all"
             >
               {isSpinning ? 'Opening...' : `Open for $${parseFloat(lootbox.price || 0).toFixed(2)}`}
             </motion.button>
@@ -313,44 +366,60 @@ const LootBoxDetail = () => {
         )}
 
         {/* Case Contents */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-6 text-center">Case contents</h2>
+        <div>
+          <h2 className="text-3xl font-bold mb-6 text-center">Case contents</h2>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {items.map((item, idx) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
-                className="bg-gray-800/50 rounded-xl p-4 border-2 hover:scale-105 transition-all cursor-pointer group"
-                style={{ borderColor: getRarityColor(item.rarity) }}
+                transition={{ delay: idx * 0.03 }}
+                className="relative group"
               >
-                <div className="relative mb-3">
-                  <div className="absolute top-2 left-2 px-2 py-1 rounded text-xs font-bold bg-black/50">
-                    {parseFloat(item.drop_rate || 0).toFixed(2)}%
+                <div
+                  className="bg-gray-800/50 rounded-lg overflow-hidden border-2 hover:scale-105 transition-all cursor-pointer"
+                  style={{ borderColor: getRarityColor(item.rarity) }}
+                >
+                  {/* Probability Badge */}
+                  <div className="absolute top-2 left-2 z-10">
+                    <div className="px-2 py-1 rounded text-xs font-bold bg-black/70 text-white">
+                      {typeof item.probability === 'number' 
+                        ? `${item.probability.toFixed(2)}%` 
+                        : item.probability || '0.00%'}
+                    </div>
                   </div>
-                  <img
-                    src={item.image_url}
-                    alt={item.name}
-                    className="w-full h-32 object-contain group-hover:scale-110 transition-transform"
-                  />
-                </div>
-                
-                <div className="space-y-1">
-                  <div
-                    className="text-xs font-bold px-2 py-1 rounded text-center uppercase"
-                    style={{ 
-                      backgroundColor: getRarityColor(item.rarity) + '20',
-                      color: getRarityColor(item.rarity)
-                    }}
-                  >
-                    {item.rarity}
+
+                  {/* Item Image */}
+                  <div className="aspect-square flex items-center justify-center p-4 bg-gray-900/30">
+                    <img
+                      src={item.image_url}
+                      alt={item.name}
+                      className="w-full h-full object-contain group-hover:scale-110 transition-transform"
+                    />
                   </div>
-                  
-                  <p className="text-sm text-center text-gray-300 line-clamp-2 min-h-[2.5rem]">
-                    {item.name}
-                  </p>
+
+                  {/* Item Info */}
+                  <div className="p-3 space-y-2">
+                    <div
+                      className="text-xs font-bold px-2 py-1 rounded text-center uppercase"
+                      style={{ 
+                        backgroundColor: getRarityColor(item.rarity) + '20',
+                        color: getRarityColor(item.rarity)
+                      }}
+                    >
+                      {item.rarity}
+                    </div>
+                    
+                    <p className="text-sm text-center text-gray-200 font-medium line-clamp-2 min-h-[2.5rem]">
+                      {item.name}
+                    </p>
+
+                    <p className="text-center text-green-400 font-bold">
+                      ${parseFloat(item.value || 0).toFixed(2)}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             ))}
