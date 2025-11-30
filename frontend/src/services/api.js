@@ -1,8 +1,18 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 
+// Debug: Check environment variables
+console.log("=== API Configuration Debug ===");
+console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
+console.log("MODE:", import.meta.env.MODE);
+console.log("DEV:", import.meta.env.DEV);
+console.log("PROD:", import.meta.env.PROD);
+
+const baseURL = import.meta.env.VITE_API_URL || 'https://aqw-skins-backend.onrender.com/api/v1';
+console.log("Using baseURL:", baseURL);
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://aqw-skins-backend.onrender.com',
+  baseURL,
   timeout: 30000,
   headers: {
     "Content-Type": "application/json",
