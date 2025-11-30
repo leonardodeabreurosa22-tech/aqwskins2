@@ -167,12 +167,27 @@ class LootBoxService {
       // 1. Parse items configuration
       const items = lootbox.items; // Expected format: [{ id, weight, ... }]
       
+      logger.info('Execute draw - lootbox items', { 
+        lootboxId: lootbox.id, 
+        itemsCount: items?.length,
+        items: JSON.stringify(items)
+      });
+      
       if (!items || items.length === 0) {
         throw new AppError('Lootbox has no items configured', 500, 'NO_ITEMS_CONFIGURED');
       }
 
+      // Validate that all items have weights
+      const invalidItems = items.filter(item => !item.weight || item.weight <= 0);
+      if (invalidItems.length > 0) {
+        logger.error('Invalid item weights detected', { invalidItems });
+        throw new AppError('Invalid weight configuration - some items have no weight', 500, 'INVALID_WEIGHTS');
+      }
+
       // 2. Calculate total weight
-      const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
+      const totalWeight = items.reduce((sum, item) => sum + (parseInt(item.weight) || 0), 0);
+
+      logger.info('Total weight calculated', { totalWeight });
 
       if (totalWeight === 0) {
         throw new AppError('Invalid weight configuration', 500, 'INVALID_WEIGHTS');
