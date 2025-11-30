@@ -89,7 +89,7 @@ const Header = () => {
                     <FiUser />
                     <span className="text-sm font-medium">{user?.username}</span>
                     <span className="text-xs text-primary-400">
-                      ${user?.balance?.toFixed(2) || '0.00'}
+                      ${parseFloat(user?.balance || 0).toFixed(2)}
                     </span>
                   </button>
 
